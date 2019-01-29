@@ -20,7 +20,7 @@
 set nocompatible
 
 " Set the character encoding used inside Vim (default is latin1)
-set encoding = utf-8
+set encoding=utf-8
 
 " Auto save file when switching buffers
 set autowrite
@@ -33,7 +33,7 @@ set noerrorbells
 set novisualbell
 
 " Set the <leader> key, the default is backslash \
-let mapleader = ","
+let mapleader=","
 
 " Define much easier way to get back to Normal mode
 imap jk <Esc>
@@ -59,7 +59,7 @@ syntax enable
 
 " Auto-highlight matching parentheses and show it blinking
 set showmatch
-set mat = 2
+set mat=2
 
 " }}}
 
@@ -93,12 +93,12 @@ au BufNewFile,BufRead *.html,*.css,*.scss,*.js,*.jsx,*.ts,*.tsx
 " HISTORY & PERSISTENCE {{{
 
 " Increase how many commands and changes to remember
-set history = 500
-set undolevels = 500
+set history=500
+set undolevels=500
 
 " Save a persistent 'undo' file.
 " NOTE: this directory needs to be created manually.
-set undodir = ~/.vim/undodir
+set undodir=~/.vim/undodir
 set undofile
 
 " }}}
@@ -169,16 +169,16 @@ nnoremap gV `[v`]
 " SPELLING {{{
 
 " Enable spellcheck. Use z= to see spelling suggestions
-set spell spelllang = en_us
+set spell spelllang=en_us
 
 " Show misspelled words in bold
 hi clear SpellBad
-hi SpellBad cterm = bold
+hi SpellBad cterm=bold
 hi clear SpellRare
 hi clear SpellCap
-hi SpellCap cterm = bold
+hi SpellCap cterm=bold
 hi clear SpellLocal
-hi SpellLocal cterm = bold
+hi SpellLocal cterm=bold
 
 " }}}
 
@@ -190,7 +190,7 @@ set relativenumber
 set number
 
 " Keep a certain amount of lines in view while scrolling
-set scrolloff = 7
+set scrolloff=7
 
 " Don't update the display while executing macros or scripts
 set lazyredraw
@@ -268,19 +268,19 @@ nnoremap <F8> :TagbarToggle<CR>
 set foldenable
 
 " Choose how folds are created. Note this vimrc file uses 'marker'
-set foldmethod = indent
+set foldmethod=indent
 
 " Limit how many folds are allowed
-set foldnestmax = 10
+set foldnestmax=10
 
 " Start out with everything unfolded
-set foldlevelstart = 99
+set foldlevelstart=99
 
 " Define which commands will trigger an auto-unfold
-set foldopen = block,hor,insert,jump,mark,percent,quickfix,search,tag,undo
+set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo
 
 " Add a fold column along the left side
-" set foldcolumn = 2
+" set foldcolumn=2
 
 " Re-map spacebar to toggling the current fold because it's so common
 vnoremap <Space> za
@@ -295,7 +295,7 @@ nnoremap z5 :set foldlevel=5<cr>
 
 " Set modelines so it will check for special modeline at the end of this file
 " to auto-collapse just this file using standard triple { instead of indents
-set modelines = 1
+set modelines=1
 
 " }}}
 
@@ -372,7 +372,7 @@ Plug 'scrooloose/nerdtree'
 " Three things in one:
 "  1) correction commonly misspelled words
 "  2) allow capital S for smart case replacements
-"  3) provide shortcuts for reformatting casing (crm = coerce to snake_case)
+"  3) provide shortcuts for reformatting casing (crm=coerce to snake_case)
 Plug 'tpope/vim-abolish'
 
 " 20 convenient mappings starting with ] and [
@@ -410,7 +410,7 @@ Plug 'majutsushi/tagbar'
 "Plug 'xolox/vim-misc'
 "Plug 'xolox/vim-easytags'
 
-}}}
+" }}}
 
 " <GIT> {{{
 " Git wrapper (:Gblame, etc)
@@ -434,9 +434,9 @@ Plug 'honza/vim-snippets'
 " You-complete me is slow on vim compiled with python2, can add this back in
 " in the future
 "Plug 'valloric/youcompleteme'
-"let g:ycm_collect_identifiers_from_tags_files = 1
-"let g:ycm_seed_identifiers_with_syntax = 1
-"let g:ycm_min_num_of_chars_for_completion = 3
+"let g:ycm_collect_identifiers_from_tags_files=1
+"let g:ycm_seed_identifiers_with_syntax=1
+"let g:ycm_min_num_of_chars_for_completion=3
 " }}}
 
 " All Plugins must be added before the following line
@@ -449,11 +449,11 @@ call plug#end()
 " -------------------------
 
 set laststatus=2
-let g:airline_theme = 'zenburn'
-let g:airline_left_sep = ''
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_sep = ''
+let g:airline_theme='zenburn'
+let g:airline_left_sep=''
+let g:airline_left_sep=''
+let g:airline_right_sep=''
+let g:airline_right_sep=''
 
 
 " <<< indentpython.vim >>>
@@ -466,10 +466,10 @@ let python_highlight_all=1
 " -------------------------
 
 let g:solarized_termcolors=256
-set background = dark
-"let g:solarized_termtrans = 1
-"let g:solarized_visibility = "high"
-"let g:solarized_contrast = "high"
+set background=dark
+"let g:solarized_termtrans=1
+"let g:solarized_visibility="high"
+"let g:solarized_contrast="high"
 "colorscheme solarized
 
 
@@ -477,7 +477,7 @@ set background = dark
 " -------------------------
 
 " Allow JSX in .js files
-let g:jsx_ext_required = 0
+let g:jsx_ext_required=0
 
 
 " <<< ultisnips >>>
@@ -485,9 +485,9 @@ let g:jsx_ext_required = 0
 
 " Set trigger for pulling up snippet selection.
 " NOTE: Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger = "<tab>"
-let g:UltiSnipsJumpForwardTrigger = "<c-b>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-z>"
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 
 " <<< ctags >>>
@@ -500,37 +500,37 @@ set tags=./tags,./TAGS,tags;~,TAGS;~
 " -------------------------
 
  " Disable default mappings
-let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_do_mapping=0
 
 " Need one more keystroke, but on average, it may be more comfortable.
 "map <Space> <Plug>(easymotion-overwin-f2)
 map <leader><leader> <Plug>(easymotion-bd-f2)
 
 " Turn on case insensitive feature
-let g:EasyMotion_smartcase = 1
+let g:EasyMotion_smartcase=1
 
 
 " <<< ale >>>
 " -------------------------
 
 " Set this. Airline will handle the rest for ALE
-let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#ale#enabled=1
 
 "nmap <silent> <leader>k <Plug>(ale_previous_wrap)
 "nmap <silent> <leader>j <Plug>(ale_next_wrap)
 
-let b:ale_fixers = { 'javascript': ['eslint'], 'python': ['black'] }
-let b:ale_linters = { 'python': ['flake8'] }
+let b:ale_fixers={ 'javascript': ['eslint'], 'python': ['black'] }
+let b:ale_linters={ 'python': ['flake8'] }
 
-let g:ale_completion_enabled = 0
-let g:ale_lint_delay = 200   " millisecs
-" let g:ale_lint_on_text_changed = 'always'  " never/insert/normal/always
-let g:ale_lint_on_enter = 1
-let g:ale_lint_on_filetype_changed = 1
-let g:ale_lint_on_save = 1
-" let g:ale_fix_on_save = 1
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+let g:ale_completion_enabled=0
+let g:ale_lint_delay=200   " millisecs
+" let g:ale_lint_on_text_changed='always'  " never/insert/normal/always
+let g:ale_lint_on_enter=1
+let g:ale_lint_on_filetype_changed=1
+let g:ale_lint_on_save=1
+" let g:ale_fix_on_save=1
+let g:ale_set_loclist=0
+let g:ale_set_quickfix=1
 
 
 " <<< nerdtree >>>
@@ -539,43 +539,43 @@ let g:ale_set_quickfix = 1
 " Ctrl-f does a page down which I never use so remap to file explorer.
 map <C-f>     :NERDTreeToggle<CR>
 
-let g:NERDTreeWinPos = "right"
-let NERDTreeShowHidden = 0
-let g:NERDTreeWinSize = 35
+let g:NERDTreeWinPos="right"
+let NERDTreeShowHidden=0
+let g:NERDTreeWinSize=35
 map <leader>nn :NERDTreeToggle<cr>
 map <leader>nb :NERDTreeFromBookmark<Space>
 map <leader>ns :NERDTreeFind<cr>
 map <leader>nf :NERDTreeFocus<cr>
 
 " Don't display these kinds of files
-let NERDTreeIgnore = [ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
+let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
             \ '\.o$', '\.so$', '\.egg$', '^\.git$', '__pycache__', '\.DS_Store' ]
 
 " Store the bookmarks file
-let NERDTreeBookmarksFile = expand("$HOME/.vim/NERDTreeBookmarks")
+let NERDTreeBookmarksFile=expand("$HOME/.vim/NERDTreeBookmarks")
 
 " Show the bookmarks table on startup
-let NERDTreeShowBookmarks = 1
+let NERDTreeShowBookmarks=1
 
 " Quit on opening files from the tree
-let NERDTreeQuitOnOpen = 1
+let NERDTreeQuitOnOpen=1
 
 " Highlight the selected entry in the tree
-let NERDTreeHighlightCursorline = 1
+let NERDTreeHighlightCursorline=1
 
 
 " <<< conoline >>>
 " -------------------------
 
 " Enable on startup
-let g:conoline_auto_enable = 1
+let g:conoline_auto_enable=1
 
 
 " <<< nerdcommenter >>>
 " -------------------------
 
 " Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
+let g:NERDSpaceDelims=1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -584,7 +584,7 @@ let g:NERDSpaceDelims = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use the the_silver_searcher if possible (much faster than Ack)
 if executable('ag')
-  let g:ackprg = 'ag --vimgrep --smart-case'
+  let g:ackprg='ag --vimgrep --smart-case'
 endif
 
 " When you press gv you Ack after the selected text
@@ -617,11 +617,11 @@ vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
 " CUSTOM FUNCTIONS {{{
 
 function! VisualSelection(direction, extra_filter) range
-    let l:saved_reg = @"
+    let l:saved_reg=@"
     execute "normal! vgvy"
 
-    let l:pattern = escape(@", "\\/.*'$^~[]")
-    let l:pattern = substitute(l:pattern, "\n$", "", "")
+    let l:pattern=escape(@", "\\/.*'$^~[]")
+    let l:pattern=substitute(l:pattern, "\n$", "", "")
 
     if a:direction == 'gv'
         call CmdLine("Ack '" . l:pattern . "' " )
@@ -629,8 +629,8 @@ function! VisualSelection(direction, extra_filter) range
         call CmdLine("%s" . '/'. l:pattern . '/')
     endif
 
-    let @/ = l:pattern
-    let @" = l:saved_reg
+    let @/=l:pattern
+    let @"=l:saved_reg
 endfunction
 
 function! <SID>ToggleNumber()
