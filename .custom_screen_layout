@@ -1,0 +1,20 @@
+#!/bin/sh
+
+ASUS_OUTPUT="HDMI-1";
+SAMSUNG_OUTPUT="DP-2";
+
+SAMSUNG_32_MODENAME="samsung_32_inch";
+xrandr --newmode $SAMSUNG_32_MODENAME 146.25  2560 2680 2944 3328  1440 1443 1448 1468 -hsync +vsync;
+
+# Need to give computer time to startup before adding mode
+#sleep 15;
+xrandr --addmode $SAMSUNG_OUTPUT $SAMSUNG_32_MODENAME;
+
+# Activate secondary out (display port)
+xrandr | grep $SAMSUNG_OUTPUT | grep " connected "
+if [ $? -eq 0 ]; then
+
+    xrandr --output eDP-1 --mode 1366x768 --pos 554x1080 --rotate normal \
+           --output $SAMSUNG_OUTPUT --mode $SAMSUNG_32_MODENAME --pos 1920x0 --rotate normal --primary \
+           --output $ASUS_OUTPUT --mode 1920x1080 --pos 0x0 --rotate normal
+fi

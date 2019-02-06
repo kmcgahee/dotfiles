@@ -1,0 +1,51 @@
+export PATH=$HOME/.fzf/bin:$PATH
+
+export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd -t d . $HOME"
+
+# fe [FUZZY PATTERN] - Open the selected file with the default editor
+#   - Bypass fuzzy finder if there's only one match (--select-1)
+#   - Exit if there's no match (--exit-0)
+# fe() {
+  # local files
+  # IFS=$'\n' files=($(fzf-tmux --query="$1" --multi --select-1 --exit-0))
+  # [[ -n "$files" ]] && ${EDITOR:-vim} "${files[@]}"
+# }
+
+# # fda - including hidden directories
+# fda() {
+  # local dir
+  # dir=$(find ${1:-.} -type d 2> /dev/null | fzf +m) && cd "$dir"
+# }
+
+# # fdr - cd to selected parent directory
+# fdr() {
+  # local declare dirs=()
+  # get_parent_dirs() {
+    # if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
+    # if [[ "${1}" == '/' ]]; then
+      # for _dir in "${dirs[@]}"; do echo $_dir; done
+    # else
+      # get_parent_dirs $(dirname "$1")
+    # fi
+  # }
+  # local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+  # cd "$DIR"
+# }
+
+# # fdf - cd to directory of a file
+# fdf() {
+   # local file
+   # local dir
+   # file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+# }
+
+# # fh - repeat history
+# fh() {
+  # eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
+# }
+
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+

@@ -1,0 +1,99 @@
+[merge]
+    tool = "meld"
+[mergetool]
+	keepBackup = false
+[mergetool "meld"]
+    cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+[mergetool "kdiff3NoAuto2"]
+	cmd = kdiff3 --L1 \"$MERGED (Base)\" --L2 \"$MERGED (Local)\" --L3 \"$MERGED (Remote)\" -o \"$MERGED\" \"$BASE\" \"$LOCAL\" \"$REMOTE\"
+[difftool]
+ 	prompt = false
+[credential]
+	helper = cache --timeout=10000
+[init]
+	templatedir = ~/.git_template
+[alias]
+	ctags = !.git/hooks/ctags
+
+    #
+    # Working with branches
+    #
+
+    # Get the current branch name (not so useful in itself, but used in other aliases)
+    branch-name = "!git rev-parse --abbrev-ref HEAD"
+    # Push the current branch to the remote "origin", and set it to track the upstream branch
+    publish = "!git push -u origin $(git branch-name)"
+    # Delete the remote version of the current branch
+    unpublish = "!git push origin :$(git branch-name)"
+
+    # Fire up your difftool with all the changes that are on the current branch.
+    code-review = difftool origin/master...
+
+    branch-compare = "!git diff $(git branch-name)..$1"
+    branch-compare-merge = "!git diff $(git merge-base --fork-point $1)"
+
+    # Given a merge commit, find the span of commits that exist(ed) on that
+    # branch. Again, not so useful in itself, but used by other aliases.
+    merge-span = "!f() { echo $(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f1)$1$(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f2); }; f"
+
+    # Find the commits that were introduced by a merge
+    merge-log = "!git log `git merge-span .. $1`"
+    # Show the changes that were introduced by a merge
+    merge-diff = "!git diff `git merge-span ... $1`"
+    # As above, but in your difftool
+    merge-difftool = "!git difftool `git merge-span ... $1`"
+
+    #
+    # Working with files
+    #
+
+    # Unstage any files that have been added to the staging area
+    unstage = reset HEAD
+    # Show changes that have been staged
+
+    # Checkout our version of a file and add it
+    ours = "!f() { git checkout --ours $@ && git add $@; }; f"
+    # Checkout their version of a file and add it
+    theirs = "!f() { git checkout --theirs $@ && git add $@; }; f"
+
+    # one-line log
+    l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+    # no colors for piping
+    lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
+
+    a = add
+    ap = add -p
+
+    c = commit --verbose
+    ca = commit -a --verbose
+    cm = commit -m
+    cam = commit -a -m
+    m = commit --amend --verbose
+    caa = commit -a --amend -C HEAD
+
+    co = checkout
+
+    d = diff
+    dc = diff --cached
+    diffc = diff --cached
+    ds = diff --stat
+    # diff from previous commit
+    dl = "!git ll -1"
+    dlc = diff --cached HEAD^
+
+    s = status
+
+    sl = stash list
+    sa = stash apply
+    ss = stash save
+
+    br = branch
+    # list branches sorted by last modified
+    bl = "!git for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'"
+
+    co = checkout
+
+    # list aliases
+    la = "!git config -l | grep alias | cut -c 7-"
