@@ -43,15 +43,6 @@ cmap w!! w !sudo tee > /dev/null %
 
 " }}}
 
-" COLORS AND FONTS {{{
-
-" Enable 256 colors palette in Gnome Terminal
-" if $COLORTERM == 'gnome-terminal'
-"     set t_Co=256
-" endif
-
-" }}}
-
 " SYNTAX HIGHLIGHTING & FORMATTING {{{
 
 " Enable syntax processing
@@ -135,7 +126,7 @@ nnoremap <leader><space> :nohlsearch<CR>
 nnoremap <leader>l :call <SID>ToggleNumber()<CR>
 
 " Toggle viewing the Undo tree
-nnoremap <leader>u :GundoToggle<CR>
+nnoremap <leader>u :UndotreeToggle<CR>
 
 " Save the current session and resume it with vim -S
 nnoremap <leader>s :mksession<CR>
@@ -153,6 +144,9 @@ vnoremap <silent> <leader>d "_d
 " This uses '#' as a delimiter instead of /
 nnoremap <leader>z :%s#\<<C-r>=expand("<cword>")<CR>\>#
 
+" Leader keys mapped from plugins
+" NERDCommenter - cc, cu, cn, c<space>, cm, ci, cs, cy, c$, cA, ca, cl, cb
+
 " }}}
 
 " VISUAL MODE {{{
@@ -163,22 +157,6 @@ vmap < <gv
 
 " Highlight the last inserted text
 nnoremap gV `[v`]
-
-" }}}
-
-" SPELLING {{{
-
-" Enable spellcheck. Use z= to see spelling suggestions
-set spell spelllang=en_us
-
-" Show misspelled words in bold
-hi clear SpellBad
-hi SpellBad cterm=bold
-hi clear SpellRare
-hi clear SpellCap
-hi SpellCap cterm=bold
-hi clear SpellLocal
-hi SpellLocal cterm=bold
 
 " }}}
 
@@ -305,9 +283,8 @@ call plug#begin('~/.vim/plugged')
 
 " <COLORS AND FONTS> {{{
 
-" Solarized color scheme for vim.
-" Note: requires using Solarized for terminal color scheme and also manually copying files.
-Plug 'altercation/vim-colors-solarized'
+" Retro colorscheme
+Plug 'morhetz/gruvbox'
 
 " }}}
 
@@ -331,6 +308,10 @@ Plug 'miyakogi/conoline.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 
+" Add syntax highlighting for JSX in TypeScript
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+
 " }}}
 
 " <USER INTERFACE> {{{
@@ -342,8 +323,8 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" Visualize the undo tree using :Gundo
-Plug 'sjl/gundo.vim'
+" Visualize the undo tree using :UndotreeToggle
+Plug 'mbbill/undotree'
 
 " Transform the UI to be better for writing using :Goyo
 Plug 'junegunn/goyo.vim'
@@ -359,7 +340,6 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'tmhedberg/simpylfold'
 
 " }}}
-
 
 " <GENERAL> {{{
 
@@ -377,6 +357,9 @@ Plug 'tpope/vim-abolish'
 
 " 20 convenient mappings starting with ] and [
 Plug 'tpope/vim-unimpaired'
+
+" Require timeout between hjkl presses to practice using better movement commands
+Plug 'takac/vim-hardtime'
 
 " }}}
 
@@ -403,12 +386,12 @@ Plug 'junegunn/fzf.vim'
 " More robust version of ctags, use C^-] and C^-t to nav
 Plug 'universal-ctags/ctags'
 
+" Auto-generate tags file in local repo while respecting ignore files
+" KLM: switch to tim-popes git hooks instead, this isn't working for some reason.
+" Plug 'szw/vim-tags'
+
 " Open side-bar showing tag structure in file
 Plug 'majutsushi/tagbar'
-
-" Automatically update tags on save
-"Plug 'xolox/vim-misc'
-"Plug 'xolox/vim-easytags'
 
 " }}}
 
@@ -431,12 +414,8 @@ Plug 'honza/vim-snippets'
 "Plug 'townk/vim-autoclose'
 
 " Also need to install https://valloric.github.io/YouCompleteMe/#ubuntu-linux-x64
-" You-complete me is slow on vim compiled with python2, can add this back in
-" in the future
-"Plug 'valloric/youcompleteme'
-"let g:ycm_collect_identifiers_from_tags_files=1
-"let g:ycm_seed_identifiers_with_syntax=1
-"let g:ycm_min_num_of_chars_for_completion=3
+Plug 'valloric/youcompleteme'
+
 " }}}
 
 " All Plugins must be added before the following line
@@ -444,6 +423,15 @@ call plug#end()
 " }}}
 
 " PLUGIN CONFIGURATION {{{
+
+" <<< youcompleteme >>>
+" -------------------------
+
+let g:ycm_collect_identifiers_from_tags_files=1
+" Enable language specific identifiers
+let g:ycm_seed_identifiers_with_syntax=1
+let g:ycm_min_num_of_chars_for_completion=3
+
 
 " <<< vim-airline >>>
 " -------------------------
@@ -454,6 +442,16 @@ let g:airline_left_sep=''
 let g:airline_left_sep=''
 let g:airline_right_sep=''
 let g:airline_right_sep=''
+
+
+" <<< vim-hardtime >>>
+" -------------------------
+
+let g:hardtime_default_on=1
+let g:hardtime_showmsg=1
+let g:hardtime_ignore_quickfix=1
+let g:hardtime_allow_different_key=1
+let g:hardtime_maxcount=2
 
 
 " <<< indentpython.vim >>>
@@ -493,7 +491,9 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " <<< ctags >>>
 " -------------------------
 
-set tags=./tags,./TAGS,tags;~,TAGS;~
+" Look for tag file in current directory, otherwise look for .git/tags
+" until hit HOME (that's what semi-colon does)
+set tags=tags;~
 
 
 " <<< vim-easymotion >>>
@@ -529,9 +529,16 @@ let g:ale_lint_on_enter=1
 let g:ale_lint_on_filetype_changed=1
 let g:ale_lint_on_save=1
 " let g:ale_fix_on_save=1
-let g:ale_set_loclist=0
-let g:ale_set_quickfix=1
+" KLM: don't enable quickfix because use that for Ack
+" let g:ale_set_quickfix=1
 
+" <<< ack >>>
+" -------------------------
+
+" Use ag instead of ack
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 " <<< nerdtree >>>
 " -------------------------
@@ -616,6 +623,8 @@ vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
 
 " CUSTOM FUNCTIONS {{{
 
+command! -bang -nargs=* Find call fzf#vim#grep('git grep --line-number '.shellescape(<q-args>), 0, <bang>0)
+
 function! VisualSelection(direction, extra_filter) range
     let l:saved_reg=@"
     execute "normal! vgvy"
@@ -641,6 +650,35 @@ function! <SID>ToggleNumber()
         set relativenumber
     endif
 endfunc
+
+" }}}
+
+" COLORS AND FONTS {{{
+
+" Enable 8 bit color support
+set t_Co=256
+
+" Requires gruvbox plugin
+" NOTE: this must be set AFTER the plugin section to work.
+let g:gruvbox_italic=1
+colorscheme gruvbox
+
+" }}}
+
+" SPELLING {{{
+
+" Enable spellcheck. Use z= to see spelling suggestions
+set spell spelllang=en_us
+
+" Show misspelled words in bold
+" NOTE: this must must after colorscheme for bold to work correctly.
+hi clear SpellBad
+hi SpellBad cterm=bold
+hi clear SpellRare
+hi clear SpellCap
+hi SpellCap cterm=bold
+hi clear SpellLocal
+hi SpellLocal cterm=bold
 
 " }}}
 
