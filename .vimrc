@@ -6,12 +6,12 @@
 " - https://github.com/dougblack/dotfiles/blob/master/.vimrc
 " - https://github.com/amix/vimrc/tree/master/vimrcs
 " - https://raw.githubusercontent.com/nvie/vimrc/master/vimrc
+" - https://github.com/aykamko/dotfiles/blob/master/vim/vimrc
 "
 " Things to do:
 "  - Ensure mappings are using correct mapping type (i.e. what mode)
-"  - Make sure all leader key mappings are grouped under LEADER POWERUPS
+"  - Make sure all leader key mappings are grouped under 'leader powerups'
 "  - Try to categorize groups
-"  - Make each plugin configuration foldable
 " }}}
 
 " GENERAL {{{
@@ -52,9 +52,18 @@ syntax enable
 set showmatch
 set mat=2
 
+" Add some extra keywords to Todo highlight group
+augroup extra_todo_highlights
+  autocmd!
+  autocmd Syntax * syn match highlightKeywords
+        \ /\v ?<(BEGIN|END|HACK|XXX|INFO|BUG|NOTE|TODO|NOPUSH)(\([^)]*\))?/
+        \ containedin=.*Comment.*
+augroup END
+highlight! def link highlightKeywords Todo
+
 " }}}
 
-" SPACES & TABS {{{
+" INDENTATION {{{
 
 " Enable specific settings based on file types.
 " This needs to be defined early on as it can affect future settings.
@@ -78,6 +87,9 @@ au BufNewFile,BufRead *.html,*.css,*.scss,*.js,*.jsx,*.ts,*.tsx
     \ set tabstop=2 |
     \ set softtabstop=2 |
     \ set shiftwidth=2 |
+
+" Always use POSIX syntax
+let g:is_posix=1
 
 " }}}
 
@@ -128,12 +140,19 @@ nnoremap <leader>l :call <SID>ToggleNumber()<CR>
 " Toggle viewing the Undo tree
 nnoremap <leader>u :UndotreeToggle<CR>
 
+" Switch files using fuzzy search
+nnoremap <leader>s :GFiles<CR>
+
 " Save the current session and resume it with vim -S
-nnoremap <leader>s :mksession<CR>
+nnoremap <leader>m :mksession<CR>
 
 " Use the Ack plugin to search project files (the Ag plugin is depreciated)
 " Using ! makes it not wait for all results before showing any
 nnoremap <leader>a :Ack!<space>
+
+" Quickly open file explorer. If use 'Find' then will open at current file.
+nnoremap <leader>n :NERDTreeFind<CR>
+nnoremap <leader>m :NERDTreeToggle<CR>
 
 " Use ,d (or ,dd or 20,dd) to delete a line without adding it to the yanked buffer
 " This also works in in visual mode
@@ -144,8 +163,12 @@ vnoremap <silent> <leader>d "_d
 " This uses '#' as a delimiter instead of /
 nnoremap <leader>z :%s#\<<C-r>=expand("<cword>")<CR>\>#
 
+" Comment lines of code
+nmap <leader>c :TComment<CR>
+vmap <leader>c :TComment<CR>
+
 " Leader keys mapped from plugins
-" NERDCommenter - cc, cu, cn, c<space>, cm, ci, cs, cy, c$, cA, ca, cl, cb
+" TODO:
 
 " }}}
 
@@ -169,6 +192,7 @@ set number
 
 " Keep a certain amount of lines in view while scrolling
 set scrolloff=7
+set sidescrolloff=7
 
 " Don't update the display while executing macros or scripts
 set lazyredraw
@@ -183,6 +207,15 @@ set wildignore=*.o,*~,*.pyc,*.swp,*.class,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
 " Speed up the updatetime so gitgutter and similar plugins update more often
 set updatetime=1500
+
+" Hack to always display sign column
+augroup always_display_sign_col
+  autocmd!
+  autocmd BufEnter * sign define dummy
+  autocmd BufEnter * if &buftype !=# 'terminal' |
+        \ exec 'sign place 9999 line=1 name=dummy buffer='.bufnr('') |
+        \ endif
+augroup END
 
 " Use fast terminal settings if scrolling is noticeably slow
 "set ttyfast
@@ -286,38 +319,55 @@ call plug#begin('~/.vim/plugged')
 " Retro colorscheme
 Plug 'morhetz/gruvbox'
 
+" Dim background color when window isn't in focus.
+Plug 'blueyed/vim-diminactive'
+
+
 " }}}
 
-" <SPACES AND TABS> {{{
+" <INDENTATION> {{{
 
 " Show trailing whitespace and offer :StripWhitespace to remove all.
 Plug 'ntpeters/vim-better-whitespace'
 
 " Improve indenting for Python
-Plug 'vim-scripts/indentpython.vim'
+Plug 'vim-scripts/indentpython.vim', { 'for': 'python' }
+
+" Guess indent options based on text in current file, or by related files
+" in the same / parent directory.
+Plug 'tpope/vim-sleuth'
+
+" Smart indenting for shell script
+Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 
 " }}}
 
 " <SYNTAX HIGHLIGHTING & FORMATTING> {{{
 
-" Show only the current window having a 'current' line and allow custom coloring if it.
-Plug 'miyakogi/conoline.vim'
-
 " Better syntax highlighting and formatting, also highlights JSDocs
 " Note: this supports Flow but not TypeScript
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
+Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'typescript'] }
+Plug 'mxw/vim-jsx', { 'for': ['javascript', 'typescript'] }
 
 " Add syntax highlighting for JSX in TypeScript
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
+Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+Plug 'peitalin/vim-jsx-typescript', { 'for': 'typescript' }
+
+" Easily align multiple lines (e.g. space around =)
+" Plug 'junegunn/vim-easy-align'
 
 " }}}
 
 " <USER INTERFACE> {{{
 
-" Make commenting/uncommenting lines easier (<leader> cc or cu)
-Plug 'scrooloose/nerdcommenter'
+" Show only the current window having a 'current' line and allow custom coloring if it.
+Plug 'miyakogi/conoline.vim'
+
+" Show indentation using vertical bars
+Plug 'yggdroot/indentline'
+
+" Make commenting/uncommenting lines easier
+Plug 'tomtom/tcomment_vim'
 
 " Show a legit status bar
 Plug 'vim-airline/vim-airline'
@@ -327,10 +377,22 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'mbbill/undotree'
 
 " Transform the UI to be better for writing using :Goyo
-Plug 'junegunn/goyo.vim'
+Plug 'junegunn/goyo.vim', { 'on': 'Goyo' }
 
 " Map ctrl+<hjkl> to move between panes without conflicting with tmux.
 Plug 'christoomey/vim-tmux-navigator'
+
+" Remap '.' to allow plugins to tap into it (Unimpaired uses this)
+Plug 'tpope/vim-repeat'
+
+" Define more 'text objects' like [ ( <, etc to operate on, e.g. i) will select inside ()
+Plug 'wellle/targets.vim'
+
+" Support for {{ and [[ for syntax highlighting, matching, text object commands, etc
+Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
+
+" Show side-bar when hit ", @, or ^R to see what's in registers.
+Plug 'junegunn/vim-peekaboo'
 
 " }}}
 
@@ -344,10 +406,13 @@ Plug 'tmhedberg/simpylfold'
 " <GENERAL> {{{
 
 " Async linter and fixer
+" NOTE: this required a newer version of Vim because of an Ubuntu bug that
+" would cause the cursor to not display very quickly.
+" PPA: https://launchpad.net/~jonathonf/+archive/ubuntu/vim
 Plug 'w0rp/ale'
 
 " File system explorer
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
 
 " Three things in one:
 "  1) correction commonly misspelled words
@@ -361,12 +426,19 @@ Plug 'tpope/vim-unimpaired'
 " Require timeout between hjkl presses to practice using better movement commands
 Plug 'takac/vim-hardtime'
 
+" Make FocusGained and FocusLost work with tmux. This is important for
+" Fugative and GitGutter plugins
+Plug 'tmux-plugins/vim-tmux-focus-events'
+
 " }}}
 
 " <SEARCHING> {{{
 
 " Use 2-character sequence to jump to anywhere in the file
 Plug 'easymotion/vim-easymotion'
+" | Plug 'haya14busa/vim-easyoperator-line'
+" | Plug 'aykamko/vim-easymotion-segments'
+
 
 " Fuzzy search git repo and populate results in change list
 Plug 'mileszs/ack.vim'
@@ -391,7 +463,7 @@ Plug 'universal-ctags/ctags'
 " Plug 'szw/vim-tags'
 
 " Open side-bar showing tag structure in file
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
 
 " }}}
 
@@ -403,7 +475,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 " }}}
 
-" <EASY INSERT> {{{
+" <EASY INSERT / EDITING> {{{
 
 " Easily insert 'templates' (snippets)
 " The 1st is the engine, the 2nd plugin is the actual snippets collection.
@@ -413,6 +485,10 @@ Plug 'honza/vim-snippets'
 " Automatically close () " etc
 "Plug 'townk/vim-autoclose'
 
+" Easily surround existing text with quotes / HTML blocks
+Plug 'tpope/vim-surround'
+
+" Auto-complete
 " Also need to install https://valloric.github.io/YouCompleteMe/#ubuntu-linux-x64
 Plug 'valloric/youcompleteme'
 
@@ -433,11 +509,25 @@ let g:ycm_seed_identifiers_with_syntax=1
 let g:ycm_min_num_of_chars_for_completion=3
 
 
+" <<< diminactive >>>
+" -------------------------
+
+" Disable syntax highlighting if not active
+" KLM: note doesn't work but instead removes all color
+" let g:diminactive_use_syntax=1
+
+" Tie in with Vim's unfocus event to dim on that too.
+" Note: required tmux-focus-events plugin to work with tmux.
+" KLM: note this doesn't work..
+" let g:diminactive_enable_focus=1
+
+
 " <<< vim-airline >>>
 " -------------------------
 
 set laststatus=2
-let g:airline_theme='zenburn'
+" Theme set by gruvbox
+" let g:airline_theme='zenburn'
 let g:airline_left_sep=''
 let g:airline_left_sep=''
 let g:airline_right_sep=''
@@ -447,11 +537,12 @@ let g:airline_right_sep=''
 " <<< vim-hardtime >>>
 " -------------------------
 
+let g:hardtime_timeout=500
 let g:hardtime_default_on=1
 let g:hardtime_showmsg=1
 let g:hardtime_ignore_quickfix=1
 let g:hardtime_allow_different_key=1
-let g:hardtime_maxcount=2
+let g:hardtime_maxcount=3
 
 
 " <<< indentpython.vim >>>
@@ -543,9 +634,6 @@ endif
 " <<< nerdtree >>>
 " -------------------------
 
-" Ctrl-f does a page down which I never use so remap to file explorer.
-map <C-f>     :NERDTreeToggle<CR>
-
 let g:NERDTreeWinPos="right"
 let NERDTreeShowHidden=0
 let g:NERDTreeWinSize=35
@@ -570,6 +658,15 @@ let NERDTreeQuitOnOpen=1
 " Highlight the selected entry in the tree
 let NERDTreeHighlightCursorline=1
 
+" Close Vim if NERDTree is the only window left
+augroup nerdtree_solo_close
+  autocmd!
+  autocmd BufEnter *
+        \ if (winnr("$")==1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) |
+        \ q |
+        \ endif
+augroup END
+
 
 " <<< conoline >>>
 " -------------------------
@@ -578,11 +675,13 @@ let NERDTreeHighlightCursorline=1
 let g:conoline_auto_enable=1
 
 
-" <<< nerdcommenter >>>
+" <<< indentline >>>
 " -------------------------
 
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims=1
+" Uncomment this to let colorscheme choose 'conceal' color (instead of gray)
+" let g:indentLine_setColors=0
+
+let g:indentLine_char = '|'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -591,7 +690,7 @@ let g:NERDSpaceDelims=1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use the the_silver_searcher if possible (much faster than Ack)
 if executable('ag')
-  let g:ackprg='ag --vimgrep --smart-case'
+  let g:ackprg='ag --vimgrep'
 endif
 
 " When you press gv you Ack after the selected text
