@@ -37,6 +37,9 @@ let mapleader=","
 
 " Define much easier way to get back to Normal mode
 imap jk <Esc>
+imap Jk <Esc>
+imap jK <Esc>
+imap JK <Esc>
 
 " Save file after forgetting to start vim using sudo
 cmap w!! w !sudo tee > /dev/null %
@@ -137,11 +140,18 @@ nnoremap <leader><space> :nohlsearch<CR>
 " Toggle between absolute and relative line numbers
 nnoremap <leader>l :call <SID>ToggleNumber()<CR>
 
+" Split horizontal/vertically and start with file search open.
+nnoremap <leader>hs :new<CR>:GFiles<CR>
+nnoremap <leader>vs :vs<CR>:GFiles<CR>
+
 " Toggle viewing the Undo tree
 nnoremap <leader>u :UndotreeToggle<CR>
 
 " Switch files using fuzzy search
 nnoremap <leader>s :GFiles<CR>
+
+" Only show changes to file, zr will show 3 lines above/below hunks.
+nnoremap <leader>hf :GitGutterFold<CR>zr
 
 " Save the current session and resume it with vim -S
 nnoremap <leader>m :mksession<CR>
@@ -387,6 +397,9 @@ Plug 'tpope/vim-repeat'
 
 " Define more 'text objects' like [ ( <, etc to operate on, e.g. i) will select inside ()
 Plug 'wellle/targets.vim'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'bkad/camelcasemotion'
+" Plug 'kana/vim-textobj-entire' throws error
 
 " Support for {{ and [[ for syntax highlighting, matching, text object commands, etc
 Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
@@ -507,6 +520,7 @@ let g:ycm_collect_identifiers_from_tags_files=1
 " Enable language specific identifiers
 let g:ycm_seed_identifiers_with_syntax=1
 let g:ycm_min_num_of_chars_for_completion=3
+let g:ycm_autoclose_preview_window_after_completion=1
 
 
 " <<< diminactive >>>
@@ -549,6 +563,12 @@ let g:hardtime_maxcount=3
 " -------------------------
 
 let python_highlight_all=1
+
+
+" <<< camelcasemotion.vim >>>
+" -------------------------
+
+call camelcasemotion#CreateMotionMappings('<leader>')
 
 
 " <<< vim-colors-solarized >>>
