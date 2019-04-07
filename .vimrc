@@ -216,7 +216,7 @@ set wildmenu
 set wildignore=*.o,*~,*.pyc,*.swp,*.class,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
 " Speed up the updatetime so gitgutter and similar plugins update more often
-set updatetime=1500
+set updatetime=300
 
 " Hack to always display sign column
 augroup always_display_sign_col
@@ -422,7 +422,7 @@ Plug 'tmhedberg/simpylfold'
 " NOTE: this required a newer version of Vim because of an Ubuntu bug that
 " would cause the cursor to not display very quickly.
 " PPA: https://launchpad.net/~jonathonf/+archive/ubuntu/vim
-Plug 'w0rp/ale'
+" Plug 'w0rp/ale'
 
 " File system explorer
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
@@ -469,7 +469,7 @@ Plug 'junegunn/fzf.vim'
 " <TAGS> {{{
 
 " More robust version of ctags, use C^-] and C^-t to nav
-Plug 'universal-ctags/ctags'
+" Plug 'universal-ctags/ctags'
 
 " Auto-generate tags file in local repo while respecting ignore files
 " KLM: switch to tim-popes git hooks instead, this isn't working for some reason.
@@ -501,9 +501,12 @@ Plug 'honza/vim-snippets'
 " Easily surround existing text with quotes / HTML blocks
 Plug 'tpope/vim-surround'
 
+" Auto-complete (NVIM)
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+
 " Auto-complete
 " Also need to install https://valloric.github.io/YouCompleteMe/#ubuntu-linux-x64
-Plug 'valloric/youcompleteme'
+" Plug 'valloric/youcompleteme'
 
 " }}}
 
@@ -521,6 +524,67 @@ let g:ycm_collect_identifiers_from_tags_files=1
 let g:ycm_seed_identifiers_with_syntax=1
 let g:ycm_min_num_of_chars_for_completion=3
 let g:ycm_autoclose_preview_window_after_completion=1
+
+" <<< coc.nvim >>>
+" -------------------------
+
+"" NOTE: on extensions
+":CocInstall coc-json coc-css coc-tsserver coc-html coc-python coc-highlight
+" TODO: look into coc-snippets intead of util-snips plugin
+
+" If hidden is not set, TextEdit might fail.
+set hidden
+
+" Some server have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+" set cmdheight=2
+
+" Don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" Always show signcolumns
+set signcolumn=yes
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K for show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Use `:Format` for format current buffer
+command! -nargs=0 Format :call CocAction('format')
 
 
 " <<< diminactive >>>
@@ -593,8 +657,8 @@ let g:jsx_ext_required=0
 " -------------------------
 
 " Set trigger for pulling up snippet selection.
-" NOTE: Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
+" KLM: disabled TAB to use in coc autocomplete
+" let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
