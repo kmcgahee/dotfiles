@@ -138,7 +138,8 @@ nnoremap k gk
 nnoremap <leader><space> :nohlsearch<CR>
 
 " Toggle between absolute and relative line numbers
-nnoremap <leader>l :call <SID>ToggleNumber()<CR>
+" NOTE: l is now used for location list
+" nnoremap <leader>l :call <SID>ToggleNumber()<CR>
 
 " Split horizontal/vertically and start with file search open.
 nnoremap <leader>hs :new<CR>:GFiles<CR>
@@ -176,6 +177,7 @@ nnoremap <leader>z :%s#\<<C-r>=expand("<cword>")<CR>\>#
 " Comment lines of code
 nmap <leader>c :TComment<CR>
 vmap <leader>c :TComment<CR>
+
 
 " Leader keys mapped from plugins
 " TODO:
@@ -356,15 +358,18 @@ Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 
 " Better syntax highlighting and formatting, also highlights JSDocs
 " Note: this supports Flow but not TypeScript
-Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'typescript'] }
-Plug 'mxw/vim-jsx', { 'for': ['javascript', 'typescript'] }
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
 
 " Add syntax highlighting for JSX in TypeScript
-Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
-Plug 'peitalin/vim-jsx-typescript', { 'for': 'typescript' }
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 
 " Easily align multiple lines (e.g. space around =)
 " Plug 'junegunn/vim-easy-align'
+
+" Improved spell checking
+Plug 'kamykn/spelunker.vim'
 
 " }}}
 
@@ -407,6 +412,14 @@ Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
 " Show side-bar when hit ", @, or ^R to see what's in registers.
 Plug 'junegunn/vim-peekaboo'
 
+" Use <leader>l and <leader>q to toggle location and quickfix lists
+Plug 'valloric/listtoggle'
+
+" Make quickfix and locationlist easier to manage (close if last open or if
+" parent closes)
+" NOTE: this might conflict with coc or other plugins
+Plug 'romainl/vim-qf'
+
 " }}}
 
 " <FOLDING> {{{
@@ -422,7 +435,7 @@ Plug 'tmhedberg/simpylfold'
 " NOTE: this required a newer version of Vim because of an Ubuntu bug that
 " would cause the cursor to not display very quickly.
 " PPA: https://launchpad.net/~jonathonf/+archive/ubuntu/vim
-Plug 'w0rp/ale'
+" Plug 'w0rp/ale'
 
 " File system explorer
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
@@ -492,14 +505,14 @@ Plug 'airblade/vim-gitgutter'
 
 " Easily insert 'templates' (snippets)
 " The 1st is the engine, the 2nd plugin is the actual snippets collection.
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+" Plug 'SirVer/ultisnips'
+" Plug 'honza/vim-snippets'
 
 " Automatically close () " etc
 "Plug 'townk/vim-autoclose'
 
 " Easily surround existing text with quotes / HTML blocks
-Plug 'tpope/vim-surround'
+" Plug 'tpope/vim-surround'
 
 " Auto-complete (NVIM)
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
@@ -529,8 +542,14 @@ let g:ycm_autoclose_preview_window_after_completion=1
 " -------------------------
 
 "" NOTE: on extensions
-":CocInstall coc-json coc-css coc-tsserver coc-html coc-python coc-highlight
-" TODO: look into coc-snippets intead of util-snips plugin
+":CocInstall
+"coc-json
+"coc-css
+"coc-tsserver coc-tslint-plugin
+"coc-html
+"coc-python
+"coc-highlight
+" TODO: look into coc-snippets
 
 " If hidden is not set, TextEdit might fail.
 set hidden
@@ -575,16 +594,19 @@ nmap <leader>rn <Plug>(coc-rename)
 vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
+" augroup mygroup
+"   autocmd!
+"   " Setup formatexpr specified filetype(s).
+"   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+"   " Update signature help on jump placeholder
+"   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+" augroup end
 
 " Use `:Format` for format current buffer
 command! -nargs=0 Format :call CocAction('format')
+
+" Use :Prettier to format current buffer
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 
 " <<< diminactive >>>
@@ -598,6 +620,15 @@ command! -nargs=0 Format :call CocAction('format')
 " Note: required tmux-focus-events plugin to work with tmux.
 " KLM: note this doesn't work..
 " let g:diminactive_enable_focus=1
+
+
+" <<< listtoggle >>>
+" -------------------------
+
+let g:lt_location_list_toggle_map='<leader>l'
+let g:lt_quickfix_list_toggle_map='<leader>q'
+" Set height of list
+let g:lt_height=10
 
 
 " <<< vim-airline >>>
@@ -772,6 +803,8 @@ let g:conoline_auto_enable=1
 " let g:indentLine_setColors=0
 
 let g:indentLine_char = '|'
+" These prevents conceallevel being changed which messes with quotes
+let g:indentLine_fileTypeExclude = ['json']
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -856,18 +889,23 @@ colorscheme gruvbox
 
 " SPELLING {{{
 
+" NOTE: this was replaced with spelunker plugin which does
+" spell checking that accounts for camel/snake case.
 " Enable spellcheck. Use z= to see spelling suggestions
-set spell spelllang=en_us
+" set spell spelllang=en_us
+"
+" " Show misspelled words in bold
+" " NOTE: this must must after colorscheme for bold to work correctly.
+" hi clear SpellBad
+" hi SpellBad cterm=bold
+" hi clear SpellRare
+" hi clear SpellCap
+" hi SpellCap cterm=bold
+" hi clear SpellLocal
+" hi SpellLocal cterm=bold
 
-" Show misspelled words in bold
-" NOTE: this must must after colorscheme for bold to work correctly.
-hi clear SpellBad
-hi SpellBad cterm=bold
-hi clear SpellRare
-hi clear SpellCap
-hi SpellCap cterm=bold
-hi clear SpellLocal
-hi SpellLocal cterm=bold
+" spelunker does spellcheck, so don't want to mark it twice.
+set nospell
 
 " }}}
 
