@@ -155,7 +155,15 @@ nnoremap <leader>s :GFiles<CR>
 nnoremap <leader>hf :GitGutterFold<CR>zr
 
 " Save the current session and resume it with vim -S
-nnoremap <leader>m :mksession<CR>
+" nnoremap <leader>m :mksession<CR>
+
+" Mark the current word as "Good" in the spellfile
+" Requires spelunker.vim
+nmap <leader>g Zg
+
+" Fix the spelling of word under curser (like "I'm feeling lucky")
+" Requires spelunker.vim
+nmap <leader>k Zf
 
 " Use the Ack plugin to search project files (the Ag plugin is depreciated)
 " Using ! makes it not wait for all results before showing any
@@ -819,9 +827,6 @@ endif
 " When you press gv you Ack after the selected text
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
-" Open Ack and put the cursor in the right position
-map <leader>g :Ack
-
 " When you press <leader>r you can search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
 
@@ -907,6 +912,13 @@ colorscheme gruvbox
 " spelunker does spellcheck, so don't want to mark it twice.
 set nospell
 
+" Note: spelunker doesn't currently run on new files or git messages.
+" This turns on spelling just for commit messages until I can figure this out.
+autocmd FileType gitcommit setlocal spell
+
 " }}}
+
+" Enable project-specific .vimrc
+set exrc
 
 " vim:foldmethod=marker:foldlevel=0
