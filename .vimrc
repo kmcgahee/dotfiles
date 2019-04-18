@@ -701,11 +701,12 @@ highlight! ALEError ctermbg=DarkMagenta
 let b:ale_fixers={ 'typescript': ['prettier'], 'javascript': ['prettier'], 'python': ['black'] }
 let b:ale_linters={ 'typescript': ['tsserver'], 'javascript': ['eslint'], 'python': ['pylint'] }
 
-let g:ale_completion_enabled=0
-let g:ale_lint_delay=200   " millisecs
+" let g:ale_completion_enabled=0
+" let g:ale_lint_delay=200   " millisecs
+let g:ale_lint_on_text_changed = 'never'
 " let g:ale_lint_on_text_changed='always'  " never/insert/normal/always
-let g:ale_lint_on_enter=1
-let g:ale_lint_on_filetype_changed=1
+" let g:ale_lint_on_enter=1
+" let g:ale_lint_on_filetype_changed=1
 let g:ale_lint_on_save=1
 let g:ale_fix_on_save=1
 " let g:ale_fix_on_save=1
