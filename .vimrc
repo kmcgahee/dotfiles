@@ -422,7 +422,7 @@ Plug 'tmhedberg/simpylfold'
 " NOTE: this required a newer version of Vim because of an Ubuntu bug that
 " would cause the cursor to not display very quickly.
 " PPA: https://launchpad.net/~jonathonf/+archive/ubuntu/vim
-" Plug 'w0rp/ale'
+Plug 'w0rp/ale'
 
 " File system explorer
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
@@ -688,14 +688,18 @@ let g:EasyMotion_smartcase=1
 " <<< ale >>>
 " -------------------------
 
+
 " Set this. Airline will handle the rest for ALE
 let g:airline#extensions#ale#enabled=1
 
 "nmap <silent> <leader>k <Plug>(ale_previous_wrap)
 "nmap <silent> <leader>j <Plug>(ale_next_wrap)
 
-let b:ale_fixers={ 'javascript': ['eslint'], 'python': ['black'] }
-let b:ale_linters={ 'python': ['flake8'] }
+highlight! ALEWarning ctermbg=DarkMagenta
+highlight! ALEError ctermbg=DarkMagenta
+
+let b:ale_fixers={ 'typescript': ['prettier'], 'javascript': ['prettier'], 'python': ['black'] }
+let b:ale_linters={ 'typescript': ['tsserver'], 'javascript': ['eslint'], 'python': ['pylint'] }
 
 let g:ale_completion_enabled=0
 let g:ale_lint_delay=200   " millisecs
@@ -703,6 +707,7 @@ let g:ale_lint_delay=200   " millisecs
 let g:ale_lint_on_enter=1
 let g:ale_lint_on_filetype_changed=1
 let g:ale_lint_on_save=1
+let g:ale_fix_on_save=1
 " let g:ale_fix_on_save=1
 " KLM: don't enable quickfix because use that for Ack
 " let g:ale_set_quickfix=1
