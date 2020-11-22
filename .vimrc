@@ -55,6 +55,10 @@ syntax enable
 set showmatch
 set mat=2
 
+" Look back 200 lines to figure out syntax highlighting.
+" This helps a ton in React w/ styled-components.
+autocmd BufEnter * :syntax sync minlines=5000
+
 " Add some extra keywords to Todo highlight group
 augroup extra_todo_highlights
   autocmd!
@@ -154,6 +158,9 @@ nnoremap <leader>s :GFiles<CR>
 " Only show changes to file, zr will show 3 lines above/below hunks.
 nnoremap <leader>hf :GitGutterFold<CR>zr
 
+" Already use <leader>hs for horizontal split fuzzy open
+nmap <Leader>ha <Plug>GitGutterStageHunk
+
 " Save the current session and resume it with vim -S
 " nnoremap <leader>m :mksession<CR>
 
@@ -185,6 +192,11 @@ nnoremap <leader>z :%s#\<<C-r>=expand("<cword>")<CR>\>#
 " Comment lines of code
 nmap <leader>c :TComment<CR>
 vmap <leader>c :TComment<CR>
+" HACK: To get working in tsx
+" autocmd FileType tsx setlocal commentstring="// %s"
+" setglobal commentstring="// %s"
+" nmap <leader>e :TCommentAs javascript<CR>
+" vmap <leader>e :TCommentAs javascript<CR>
 
 
 " Leader keys mapped from plugins
@@ -248,7 +260,8 @@ augroup END
 
 " Sometimes files opened using quickfix window don't detect filetype
 " so tie it into the "refresh screen" command.
-nnoremap <C-w> :filetype detect<cr>:redraw!<cr>
+" KLM: doesn't seem to work
+"nnoremap <C-w> :filetype detect<cr>:redraw!<cr>
 
 " }}}
 
@@ -364,6 +377,9 @@ Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 
 " <SYNTAX HIGHLIGHTING & FORMATTING> {{{
 
+" Supports styled-components AND emotions and others
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+
 " Better syntax highlighting and formatting, also highlights JSDocs
 " Note: this supports Flow but not TypeScript
 Plug 'pangloss/vim-javascript'
@@ -397,7 +413,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Visualize the undo tree using :UndotreeToggle
-Plug 'mbbill/undotree'
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 
 " Transform the UI to be better for writing using :Goyo
 Plug 'junegunn/goyo.vim', { 'on': 'Goyo' }
@@ -418,7 +434,8 @@ Plug 'bkad/camelcasemotion'
 Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
 
 " Show side-bar when hit ", @, or ^R to see what's in registers.
-Plug 'junegunn/vim-peekaboo'
+" KLM: commented out to see if it fixes the 'collapse pane on paste' bug I'm
+" Plug 'junegunn/vim-peekaboo'
 
 " Use <leader>l and <leader>q to toggle location and quickfix lists
 Plug 'valloric/listtoggle'
@@ -433,7 +450,7 @@ Plug 'romainl/vim-qf'
 " <FOLDING> {{{
 
 " Use a better folding algorithm for Python
-Plug 'tmhedberg/simpylfold'
+Plug 'tmhedberg/simpylfold', { 'for': 'python' }
 
 " }}}
 
@@ -523,7 +540,8 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'tpope/vim-surround'
 
 " Auto-complete (NVIM)
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+" Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Auto-complete
 " Also need to install https://valloric.github.io/YouCompleteMe/#ubuntu-linux-x64
@@ -553,6 +571,9 @@ let g:ycm_autoclose_preview_window_after_completion=1
 ":CocInstall
 "coc-json
 "coc-css
+"coc-prettier
+"coc-eslint
+"coc-stylelint
 "coc-tsserver coc-tslint-plugin
 "coc-html
 "coc-python
@@ -752,13 +773,6 @@ let g:ale_fix_on_save=1
 " KLM: don't enable quickfix because use that for Ack
 " let g:ale_set_quickfix=1
 
-" <<< ack >>>
-" -------------------------
-
-" Use ag instead of ack
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
 
 " <<< nerdtree >>>
 " -------------------------
@@ -815,20 +829,19 @@ let g:indentLine_char = '|'
 let g:indentLine_fileTypeExclude = ['json']
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Ack searching and cope displaying
-"    requires ack.vim - it's much better than vimgrep/grep
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" <<< ack >>>
+" -------------------------
+
 " Use the the_silver_searcher if possible (much faster than Ack)
 if executable('ag')
-  let g:ackprg='ag --vimgrep'
+  let g:ackprg='ag --vimgrep -Q'
 endif
 
 " When you press gv you Ack after the selected text
-vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
+" vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
 " When you press <leader>r you can search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
+" vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
 
 " Do :help cope if you are unsure what cope is. It's super useful!
 "
@@ -911,14 +924,12 @@ colorscheme gruvbox
 
 " spelunker does spellcheck, so don't want to mark it twice.
 set nospell
+set spellfile=~/webapps/wize/config/spell/klm.en.utf-8.add
 
 " Note: spelunker doesn't currently run on new files or git messages.
 " This turns on spelling just for commit messages until I can figure this out.
 autocmd FileType gitcommit setlocal spell
 
 " }}}
-
-" Enable project-specific .vimrc
-set exrc
 
 " vim:foldmethod=marker:foldlevel=0

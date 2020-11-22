@@ -59,7 +59,6 @@ export LS_COLORS="$LS_COLORS:ow=1;34:tw=1;34:"
 # For a full list of active aliases, run `alias`.
 
 # Plain Aliases
-alias vi="vim"
 alias light="base16_gruvbox-light-soft"
 alias dark="base16_gruvbox-dark-hard"
 alias da="deactivate" # virtualenv
@@ -68,18 +67,26 @@ alias ll="ls -la" # show hidden files
 alias echo_colors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: test"; done'
 alias today='vi ~/notes/today/$(date "+%Y-%m-%d").md'
 alias yesterday='vi ~/notes/today/$(ls ~/notes/today | sort | tail -n 1)'
-alias clean="git reset --hard HEAD && git clean -df"
+# alias deploy="(cd ~/webapps/wize && eb deploy knowledge-staging)"
+
+# Vim aliases
+alias vi="nvim"
+alias vim="nvim"
+alias vimdiff="nvim -d"
 
 # Git Aliases
-alias add="git add -A"
-alias add_updated="git add -u"
+alias add="git add"
+alias gac="git add -A && git commit -m $1"
+alias clean="git reset --hard HEAD && git clean -df"
+alias ff="git pull --ff-only"
 alias amend="git commit --amend"
 alias b="git branch"
 alias branch="git branch"
 alias commit="git commit"
-alias check="git checkout"
+alias co="git checkout"
 alias diff="git diff --color"
-alias fetch="git fetch --tags"
+alias diffc="git diff --color --cached"
+alias fetch="git fetch && git fetch --tags"
 alias gs="git status --short"
 alias l="git l"
 alias lg1="git lg1"
@@ -90,6 +97,8 @@ alias show="git show"
 alias staged="git diff --staged"
 alias stash="git stash"
 alias unstash="git stash apply"
+alias merge="git merge"
+alias tag="git tag"
 
 cd_git_root(){
 	cd $(git rev-parse --show-toplevel)
@@ -116,13 +125,14 @@ ts(){
 
 # Open vim with output of FZF
 v(){
-    vim $(fzf)
+    nvim $(fzf)
 }
 
 source ~/.fuzzyrc
 source ~/.knowledge_rc
+source ~/.wize_rc
 
-export EDITOR=vim;
+export EDITOR=nvim;
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -131,3 +141,5 @@ export NVM_DIR="$HOME/.nvm"
 # virtualenvwrapper setup
 export WORKON_HOME=$HOME/virtualenvs
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
