@@ -1,4 +1,5 @@
 {
     "coc.preferences.formatOnSaveFiletypes": ["typescript", "typescriptreact", "javascriptreact", "javascript", "css", "Markdown"],
-    "coc.preferences.formatOnType": false
+    "coc.preferences.formatOnType": false,
+    "diagnostic.checkCurrentLine": true
 }
