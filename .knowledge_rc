@@ -1,0 +1,95 @@
+
+# USED to be kn but now added o for old
+kno() {
+
+    # Repo root directory
+    root_dir=~/webapps/wize
+
+    # Project directory
+    project_dir=$root_dir/django_wize
+
+    # Front end directory
+    frontend_dir=$root_dir/frontend
+
+    # Front end directory V2
+    frontend_dir_v2=$root_dir/v2-frontend
+
+    # Markize editor directory
+    markize_dir=$root_dir/markize_admin
+
+    # Activate virtualenv
+    workon kn
+
+    for arg in "$@"
+    do
+      # Note: wrapping commands below in paranethesis will run them in a subshell
+      # as a robust way of not changing your current directory.
+      case "$arg" in
+        r) # run django server
+            (cd "$project_dir" && exec python manage.py runserver)
+            ;;
+        rn) # run wepback dev server (rn = run node)
+            (cd "$project_dir" && exec npm run dev-server)
+            ;;
+        p) # change to project directory
+            cd "$project_dir"
+            ;;
+        m) # change to project directory
+            cd "$markize_dir"
+            ;;
+        w) # change to root workspace directory
+            cd "$root_dir"
+            ;;
+        f1) # change to frontend directory
+            cd "$frontend_dir"
+            ;;
+        f) # change to frontend directory
+            cd "$frontend_dir_v2"
+            ;;
+        c) # compile
+            (cd "$project_dir" && exec npm run build)
+            ;;
+        check) # run check for project issues without doing migrations
+            (cd "$project_dir" && exec python manage.py check)
+            ;;
+        t) # run all tests
+            (cd "$project_dir" && exec python manage.py test -k)
+            ;;
+        v) # fuzzy file search with vim
+            (cd "$root_dir" && exec nvim $(fzf))
+            ;;
+        vd) # fuzzy directory search
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdh)
+            ;;
+        vf) # fuzzy file directory search BY FILE
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdf)
+            ;;
+        d) # login to database
+            psql -d knowledge -h $RDS_HOSTNAME -p 5432 -U klm
+            ;;
+        dl) # login to database locally
+            sudo -u postgres psql
+            ;;
+        tag) # regenerate tags
+            (cd "$root_dir" && exec bash .git/hooks/ctags)
+            ;;
+        freeze) # freeze requirements
+            (cd "$root_dir" && exec pip freeze -l > requirements.txt)
+            ;;
+        *)
+            echo $"Unrecognized arg: $arg"
+            return 1
+            ;;
+        esac
+    done # processing command line argument
+}
+
+kn_help() {
+
+echo '1. :grep <search term>'
+echo '2. :cdo %s/<search term>/<replace term>/gc'
+echo '3. (If you want to save the changes in all files) :cdo update'
+
+}
