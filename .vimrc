@@ -297,6 +297,13 @@ nnoremap <C-H> <C-W><C-H>
 " Show all buffers and then type in number or part of file and hit enter
 nnoremap <F5> :ls<CR>:b<Space>
 
+
+" Open project notes. Use gt to toggle between (goto tab).
+" with Vim’s :drop command. With :drop, Vim will open the file if it’s
+" not already open, or jump to the open buffer if it is.
+" Combine with :tab and we get an even better mapping:
+nmap <script>n<CR> <SID>:tab drop tmp/notes.md<CR>
+
 " }}}
 
 " TAGS {{{
@@ -468,7 +475,8 @@ Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
 " Three things in one:
 "  1) correction commonly misspelled words
 "  2) allow capital S for smart case replacements
-"  3) provide shortcuts for reformatting casing (crm=coerce to snake_case)
+"  3) provide shortcuts for reformatting casing (crm=coerce to snake_case,
+"  cr-=dash-case, cru=upper-case, crt=title case)
 Plug 'tpope/vim-abolish'
 
 " 20 convenient mappings starting with ] and [
@@ -579,6 +587,12 @@ let g:ycm_autoclose_preview_window_after_completion=1
 "coc-python
 "coc-highlight
 " TODO: look into coc-snippets
+
+" THIS is how you get error on each line, not just on a character
+" {
+"   diagnostic.checkCurrentLine": true
+" }
+" coc-settings.json can be found in ~/.vim/coc-settings.json
 
 " If hidden is not set, TextEdit might fail.
 set hidden
