@@ -1,0 +1,256 @@
+# sk = ???
+sk() {
+
+    # Repo root directory
+    root_dir=~/bearflag/bfr-api
+
+    # Project directory
+    project_dir=$root_dir/GQL/src
+
+    # Front end directory
+    # frontend_dir=$root_dir/frontend
+
+    # Activate virtualenv
+    # workon fl
+
+    # Source our BFR workspace.
+    # source $project_dir/bfr_src/devel/setup.zsh
+
+    for arg in "$@"
+    do
+      # Note: wrapping commands below in paranethesis will run them in a subshell
+      # as a robust way of not changing your current directory.
+      case "$arg" in
+        # r) # run django server
+        #     (cd "$project_dir" && exec python manage.py runserver)
+        #     ;;
+        # rn) # run wepback dev server (rn = run node)
+        #     (cd "$project_dir" && exec npm run dev-server)
+        #     ;;
+        s) # change to src directory
+            cd "$project_dir"
+            ;;
+        p) # change to project directory
+            cd "$project_dir"
+            ;;
+        w) # change to root workspace directory
+            cd "$root_dir"
+            ;;
+        # c) # compile
+        #     (cd "$project_dir"/bfr_src && exec catkin_make)
+        #     ;;
+        # check) # run check for project issues without doing migrations
+        #     (cd "$project_dir" && exec python manage.py check)
+        #     ;;
+        # t) # run all tests
+        #     (cd "$project_dir" && exec python manage.py test -k)
+        #     ;;
+        v) # fuzzy file search with vim
+            (cd "$project_dir" && exec nvim $(fzf))
+            ;;
+        va) # fuzzy file search with vim all files
+            (cd "$root_dir" && exec nvim $(fzf))
+            ;;
+        vd) # fuzzy directory search
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdh)
+            ;;
+        vf) # fuzzy file directory search BY FILE
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdf)
+            ;;
+        # d) # login to database
+        #     psql -d knowledge -h $RDS_HOSTNAME -p 5432 -U klm
+        #     ;;
+        # dl) # login to database locally
+        #     sudo -u postgres psql
+        #     ;;
+        tag) # regenerate tags
+            (cd "$root_dir" && exec bash .git/hooks/ctags)
+            ;;
+        # freeze) # freeze requirements
+        #     (cd "$root_dir" && exec pip freeze -l > requirements.txt)
+        #     ;;
+        *)
+            echo $"Unrecognized arg: $arg"
+            return 1
+            ;;
+        esac
+    done # processing command line argument
+}
+
+# ap = app
+ap() {
+
+    # Repo root directory
+    root_dir=~/bearflag/bfr-public-app
+
+    # Project directory
+    project_dir=$root_dir/src
+
+    # Front end directory
+    # frontend_dir=$root_dir/frontend
+
+    # Activate virtualenv
+    # workon fl
+
+    # Source our BFR workspace.
+    # source $project_dir/bfr_src/devel/setup.zsh
+
+    for arg in "$@"
+    do
+      # Note: wrapping commands below in paranethesis will run them in a subshell
+      # as a robust way of not changing your current directory.
+      case "$arg" in
+        # r) # run django server
+        #     (cd "$project_dir" && exec python manage.py runserver)
+        #     ;;
+        # rn) # run wepback dev server (rn = run node)
+        #     (cd "$project_dir" && exec npm run dev-server)
+        #     ;;
+        s) # change to src directory
+            cd "$project_dir"
+            ;;
+        p) # change to project directory
+            cd "$project_dir"
+            ;;
+        w) # change to root workspace directory
+            cd "$root_dir"
+            ;;
+        # c) # compile
+        #     (cd "$project_dir"/bfr_src && exec catkin_make)
+        #     ;;
+        # check) # run check for project issues without doing migrations
+        #     (cd "$project_dir" && exec python manage.py check)
+        #     ;;
+        # t) # run all tests
+        #     (cd "$project_dir" && exec python manage.py test -k)
+        #     ;;
+        v) # fuzzy file search with vim
+            (cd "$project_dir" && exec nvim $(fzf))
+            ;;
+        va) # fuzzy file search with vim all files
+            (cd "$root_dir" && exec nvim $(fzf))
+            ;;
+        vd) # fuzzy directory search
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdh)
+            ;;
+        vf) # fuzzy file directory search BY FILE
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdf)
+            ;;
+        # d) # login to database
+        #     psql -d knowledge -h $RDS_HOSTNAME -p 5432 -U klm
+        #     ;;
+        # dl) # login to database locally
+        #     sudo -u postgres psql
+        #     ;;
+        tag) # regenerate tags
+            (cd "$root_dir" && exec bash .git/hooks/ctags)
+            ;;
+        # freeze) # freeze requirements
+        #     (cd "$root_dir" && exec pip freeze -l > requirements.txt)
+        #     ;;
+        *)
+            echo $"Unrecognized arg: $arg"
+            return 1
+            ;;
+        esac
+    done # processing command line argument
+}
+
+kn_help() {
+
+echo '1. :grep <search term>'
+echo '2. :cdo %s/<search term>/<replace term>/gc'
+echo '3. (If you want to save the changes in all files) :cdo update'
+
+}
+
+# fl = app
+fl() {
+
+    # Repo root directory
+    root_dir=~/bearflag
+
+    # Project directory
+    project_dir=$root_dir/bfr_main
+
+    # Core stack directory
+    stack_dir=$project_dir/bfr_src/src
+
+    # Front end directory
+    # frontend_dir=$root_dir/frontend
+
+    # Activate virtualenv
+    workon fl
+
+    # Source our BFR workspace.
+    source $project_dir/bfr_src/devel/setup.zsh
+
+    for arg in "$@"
+    do
+      # Note: wrapping commands below in paranethesis will run them in a subshell
+      # as a robust way of not changing your current directory.
+      case "$arg" in
+        # r) # run django server
+        #     (cd "$project_dir" && exec python manage.py runserver)
+        #     ;;
+        # rn) # run wepback dev server (rn = run node)
+        #     (cd "$project_dir" && exec npm run dev-server)
+        #     ;;
+        s) # change to statck directory
+            cd "$stack_dir"
+            ;;
+        p) # change to project directory
+            cd "$project_dir"
+            ;;
+        w) # change to root workspace directory
+            cd "$root_dir"
+            ;;
+        c) # compile
+            (cd "$project_dir"/bfr_src && exec catkin_make)
+            ;;
+        # check) # run check for project issues without doing migrations
+        #     (cd "$project_dir" && exec python manage.py check)
+        #     ;;
+        # t) # run all tests
+        #     (cd "$project_dir" && exec python manage.py test -k)
+        #     ;;
+        v) # fuzzy file search with vim
+            (cd "$project_dir" && exec nvim $(fzf))
+            ;;
+        va) # fuzzy file search with vim all files
+            (cd "$root_dir" && exec nvim $(fzf))
+            ;;
+        vs) # fuzzy file search just the core stack all files
+            (cd "$stack_dir" && exec nvim $(fzf))
+            ;;
+        vd) # fuzzy directory search
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdh)
+            ;;
+        vf) # fuzzy file directory search BY FILE
+            # DOESN"T WORK, can't change directory?
+            # cd "$root_dir" && exec $(fzfdf)
+            ;;
+        # d) # login to database
+        #     psql -d knowledge -h $RDS_HOSTNAME -p 5432 -U klm
+        #     ;;
+        # dl) # login to database locally
+        #     sudo -u postgres psql
+        #     ;;
+        tag) # regenerate tags
+            (cd "$root_dir" && exec bash .git/hooks/ctags)
+            ;;
+        freeze) # freeze requirements
+            (cd "$root_dir" && exec pip freeze -l > requirements.txt)
+            ;;
+        *)
+            echo $"Unrecognized arg: $arg"
+            return 1
+            ;;
+        esac
+    done # processing command line argument
+}
