@@ -1,6 +1,9 @@
 # Path to the oh-my-zsh installation.
 export ZSH="/home/kyle/.oh-my-zsh"
 
+# Bash uses HOSTNAME, so set this for compatibility with BFR scripts.
+HOSTNAME=$HOST
+
 # Disabled to use Pure theme.
 ZSH_THEME=""
 
@@ -131,6 +134,7 @@ v(){
 source ~/.fuzzyrc
 source ~/.knowledge_rc
 source ~/.wize_rc
+source ~/.bearflag_rc
 
 export EDITOR=nvim;
 
@@ -138,8 +142,19 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# Add current directory node modules
+# export PATH=./node_modules/.bin/:$PATH
+
 # virtualenvwrapper setup
 export WORKON_HOME=$HOME/virtualenvs
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+source /opt/ros/melodic/setup.zsh
+# UNCOMMENT TO REBUILD EVERYTHING!
+# source ~/.bearflag_docker_setup_melodic.bash
+source ~/.bearflag_extended_bashrc
+# Where the koda and yogi functions live (and pingkoda and kv for koda video)
+source ~/bearflag/bfr-puppet-r10k/modules/workstation_alias/templates/workstation_bash_extension.erb
+
