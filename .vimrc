@@ -401,6 +401,8 @@ Plug 'peitalin/vim-jsx-typescript'
 
 " Improved spell checking
 Plug 'kamykn/spelunker.vim'
+" Needed for spell checking popup
+Plug 'kamykn/popup-menu.nvim'
 
 " }}}
 
@@ -584,8 +586,10 @@ let g:ycm_autoclose_preview_window_after_completion=1
 "coc-stylelint
 "coc-tsserver coc-tslint-plugin
 "coc-html
-"coc-python
+"coc-pyright   (a replacement for the depreciated coc-python)
 "coc-highlight
+"coc-diagnostic (extra linters for shell, markdown, etc)
+"coc-vetur   (for Vue)
 " TODO: look into coc-snippets
 
 " THIS is how you get error on each line, not just on a character
@@ -615,6 +619,8 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" let g:node_client_debug = 1
 
 " Use K for show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -764,28 +770,28 @@ let g:EasyMotion_smartcase=1
 
 
 " Set this. Airline will handle the rest for ALE
-let g:airline#extensions#ale#enabled=1
-
-"nmap <silent> <leader>k <Plug>(ale_previous_wrap)
-"nmap <silent> <leader>j <Plug>(ale_next_wrap)
-
-highlight! ALEWarning ctermbg=DarkMagenta
-highlight! ALEError ctermbg=DarkMagenta
-
-let b:ale_fixers={ 'typescript': ['prettier'], 'javascript': ['prettier'], 'python': ['black'] }
-let b:ale_linters={ 'typescript': ['tsserver'], 'javascript': ['eslint'], 'python': ['pylint'] }
-
-" let g:ale_completion_enabled=0
-" let g:ale_lint_delay=200   " millisecs
-let g:ale_lint_on_text_changed = 'never'
-" let g:ale_lint_on_text_changed='always'  " never/insert/normal/always
-" let g:ale_lint_on_enter=1
-" let g:ale_lint_on_filetype_changed=1
-let g:ale_lint_on_save=1
-let g:ale_fix_on_save=1
+" let g:airline#extensions#ale#enabled=1
+"
+" "nmap <silent> <leader>k <Plug>(ale_previous_wrap)
+" "nmap <silent> <leader>j <Plug>(ale_next_wrap)
+"
+" highlight! ALEWarning ctermbg=DarkMagenta
+" highlight! ALEError ctermbg=DarkMagenta
+"
+" let b:ale_fixers={ 'typescript': ['prettier'], 'javascript': ['prettier'], 'python': ['black'] }
+" let b:ale_linters={ 'typescript': ['tsserver'], 'javascript': ['eslint'], 'python': ['pylint'] }
+"
+" " let g:ale_completion_enabled=0
+" " let g:ale_lint_delay=200   " millisecs
+" let g:ale_lint_on_text_changed = 'never'
+" " let g:ale_lint_on_text_changed='always'  " never/insert/normal/always
+" " let g:ale_lint_on_enter=1
+" " let g:ale_lint_on_filetype_changed=1
+" let g:ale_lint_on_save=1
 " let g:ale_fix_on_save=1
-" KLM: don't enable quickfix because use that for Ack
-" let g:ale_set_quickfix=1
+" " let g:ale_fix_on_save=1
+" " KLM: don't enable quickfix because use that for Ack
+" " let g:ale_set_quickfix=1
 
 
 " <<< nerdtree >>>
@@ -938,7 +944,10 @@ colorscheme gruvbox
 
 " spelunker does spellcheck, so don't want to mark it twice.
 set nospell
-set spellfile=~/webapps/wize/config/spell/klm.en.utf-8.add
+set spellfile=~/dotfiles/klm.en.utf-8.add
+
+highlight SpelunkerSpellBad cterm=bold
+highlight SpelunkerComplexOrCompoundWord cterm=bold
 
 " Note: spelunker doesn't currently run on new files or git messages.
 " This turns on spelling just for commit messages until I can figure this out.

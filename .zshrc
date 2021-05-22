@@ -27,19 +27,15 @@ COMPLETION_WAITING_DOTS="true"
 # This makes repository status check for large repositories much, much faster.
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# Load plugins:
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git colored-man-pages zsh-syntax-highlighting)
-
-source $ZSH/oh-my-zsh.sh
 
 # --------------------------------
 # User configuration
 # --------------------------------
 
 # Enable Pure theme
-fpath+=('/home/kyle/.nvm/versions/node/v11.8.0/lib/node_modules/pure-prompt/functions')
+fpath+=('/home/kyle/.nvm/versions/node/v14.17.0/lib/node_modules/pure-prompt/functions')
+# fpath+=('/home/kyle/.nvm/versions/node/v11.8.0/lib/node_modules/pure-prompt/functions')
+
 autoload -U promptinit; promptinit
 prompt pure
 
@@ -53,17 +49,33 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # Set terminal colorscheme using script
+# NOTE: this isn't necessary when using Hyper -- there you have to
+# use a Hyper plugin.
 base16_gruvbox-dark-hard
 
 # Disable background colors during LS that make it hard to read.
 # Format is: bold;font-color;bg-color
 export LS_COLORS="$LS_COLORS:ow=1;34:tw=1;34:"
 
+
+
+# MUST COME AFTER COLORS BUT BEFORE GIT ALIASES (or else aliases will be overwritten)
+# Load plugins:
+# vvvvvvvvvvvvvvvvvvvvvvvvvv
+# NOTE: syntax-highlighting must be the last loaded plugin
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+plugins=(git colored-man-pages zsh-autosuggestions zsh-syntax-highlighting)
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=5'
+
+
+source $ZSH/oh-my-zsh.sh
+
 # For a full list of active aliases, run `alias`.
 
 # Plain Aliases
-alias light="base16_gruvbox-light-soft"
-alias dark="base16_gruvbox-dark-hard"
+# alias light="base16_gruvbox-light-soft"
+# alias dark="base16_gruvbox-dark-hard"
 alias da="deactivate" # virtualenv
 alias reload="source ~/.zshrc"
 alias ll="ls -la" # show hidden files
@@ -71,6 +83,7 @@ alias echo_colors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: te
 alias today='vi ~/notes/today/$(date "+%Y-%m-%d").md'
 alias yesterday='vi ~/notes/today/$(ls ~/notes/today | sort | tail -n 1)'
 # alias deploy="(cd ~/webapps/wize && eb deploy knowledge-staging)"
+
 
 # Vim aliases
 alias vi="nvim"
@@ -133,7 +146,7 @@ v(){
 
 source ~/.fuzzyrc
 source ~/.knowledge_rc
-source ~/.wize_rc
+# source ~/.wize_rc  Commented out for BFR
 source ~/.bearflag_rc
 
 export EDITOR=nvim;
@@ -143,18 +156,23 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Add current directory node modules
-# export PATH=./node_modules/.bin/:$PATH
+export PATH=./node_modules/.bin/:$PATH
 
+# KLM: commented out for BFR since python version 3.7 doesn't support
+# export WORKON_HOME=$HOME/virtualenvs
+# source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 # virtualenvwrapper setup
-export WORKON_HOME=$HOME/virtualenvs
-source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source /opt/ros/melodic/setup.zsh
+# source /opt/ros/melodic/setup.zsh
 # UNCOMMENT TO REBUILD EVERYTHING!
 # source ~/.bearflag_docker_setup_melodic.bash
-source ~/.bearflag_extended_bashrc
+# source ~/.bearflag_extended_bashrc
 # Where the koda and yogi functions live (and pingkoda and kv for koda video)
 source ~/bearflag/bfr-puppet-r10k/modules/workstation_alias/templates/workstation_bash_extension.erb
+
+
+alias fd=fdfind
+
 
