@@ -379,6 +379,9 @@ Plug 'tpope/vim-sleuth'
 
 " Smart indenting for shell script
 Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
+"
+" Vim syntax and indent plugin for .vue files. Mainly inspired by mxw/vim-jsx
+Plug 'leafoftree/vim-vue-plugin', { 'for': ['vue'] }
 
 " }}}
 
@@ -454,6 +457,15 @@ Plug 'valloric/listtoggle'
 " NOTE: this might conflict with coc or other plugins
 Plug 'romainl/vim-qf'
 
+
+" Better version than matchit built in plugin (this should auto disable that one)
+" match-up is a plugin that lets you highlight, navigate, and operate on sets of matching text.
+" It extends vim's % key to language-specific words instead of just single characters.
+" (note: for Vue this needs vim-vue-plugin)
+Plug 'andymass/vim-matchup'
+
+
+
 " }}}
 
 " <FOLDING> {{{
@@ -518,7 +530,7 @@ Plug 'junegunn/fzf.vim'
 
 
 " Seems like the best tags manager? This is mostly used for 'go to definition'
-Plug 'ludovicchabant/vim-gutentags'
+" Plug 'ludovicchabant/vim-gutentags'
 
 " More robust version of ctags, use C^-] and C^-t to nav
 " Plug 'universal-ctags/ctags'
@@ -760,10 +772,10 @@ let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
 " USE THIS TO CLEAR THE TAG CACHE
 " command! -nargs=0 GutentagsClearCache call system('rm ' . g:gutentags_cache_dir . '/*')
 
-let g:gutentags_generate_on_new = 1
-let g:gutentags_generate_on_missing = 1
-let g:gutentags_generate_on_write = 1
-let g:gutentags_generate_on_empty_buffer = 0
+" let g:gutentags_generate_on_new = 1
+" let g:gutentags_generate_on_missing = 1
+" let g:gutentags_generate_on_write = 1
+" let g:gutentags_generate_on_empty_buffer = 0
 
 " Let Gutentags generate more info for the tags.
 " Explaining --fields=+ailmnS (info gathered from: $ ctags --list-fields)
@@ -1030,6 +1042,10 @@ colorscheme gruvbox
 " spelunker does spellcheck, so don't want to mark it twice.
 set nospell
 set spellfile=~/dotfiles/klm.en.utf-8.add
+
+" 2: Spellcheck displayed words in buffer. Fast and dynamic. The waiting time
+" depends on the setting of CursorHold `set updatetime=1000`.
+let g:spelunker_check_type = 2
 
 highlight SpelunkerSpellBad cterm=bold
 highlight SpelunkerComplexOrCompoundWord cterm=bold
