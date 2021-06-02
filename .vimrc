@@ -954,6 +954,10 @@ if executable('ag')
   let g:ackprg='ag --vimgrep -Q'
 endif
 
+" Search word under cursor
+" This is at the bottom to overwrite coc mapping for leader f.
+nnoremap <Leader>f :Ack! <cword><cr>
+
 " When you press gv you Ack after the selected text
 " vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
@@ -1055,5 +1059,5 @@ highlight SpelunkerComplexOrCompoundWord cterm=bold
 autocmd FileType gitcommit setlocal spell
 
 " }}}
-
+"
 " vim:foldmethod=marker:foldlevel=0
