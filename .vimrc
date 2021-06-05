@@ -59,6 +59,16 @@ set mat=2
 " This helps a ton in React w/ styled-components.
 autocmd BufEnter * :syntax sync minlines=5000
 
+" Highlighting for large files
+" Copied from: https://thoughtbot.com/blog/modern-typescript-and-react-development-in-vim
+" Sometimes syntax highlighting can get out of sync in large JSX and TSX files.
+" This was happening too often for me so I opted to enable syntax sync fromstart, which forces vim to rescan the entire buffer when highlighting.
+" This does so at a performance cost, especially for large files. It is significantly faster in Neovim than in vim.
+" I prefer to enable this when I enter a JavaScript or TypeScript buffer, and disable it when I leave:
+autocmd BufEnter *.{js,jsx,ts,tsx,vue} :syntax sync fromstart
+autocmd BufLeave *.{js,jsx,ts,tsx,vue} :syntax sync minlines=200
+
+
 " Add some extra keywords to Todo highlight group
 augroup extra_todo_highlights
   autocmd!
@@ -381,7 +391,13 @@ Plug 'tpope/vim-sleuth'
 Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 "
 " Vim syntax and indent plugin for .vue files. Mainly inspired by mxw/vim-jsx
-Plug 'leafoftree/vim-vue-plugin', { 'for': ['vue'] }
+" KLM: trying to enable for all to see if that fixes the search box
+" highlighting being bad :(
+" Plug 'leafoftree/vim-vue-plugin', { 'for': ['vue'] }
+Plug 'leafoftree/vim-vue-plugin'
+
+" For highlighting GraphQL (GQL)
+Plug 'jparise/vim-graphql'
 
 " }}}
 
@@ -421,8 +437,11 @@ Plug 'yggdroot/indentline'
 Plug 'tomtom/tcomment_vim'
 
 " Show a legit status bar
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+if !exists('g:started_by_firenvim')
+  " Disable vim-airline when firenvim starts since vim-airline takes two lines.
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+endif
 
 " Visualize the undo tree using :UndotreeToggle
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
@@ -500,8 +519,11 @@ Plug 'tpope/vim-unimpaired'
 Plug 'takac/vim-hardtime'
 
 " Make FocusGained and FocusLost work with tmux. This is important for
-" Fugative and GitGutter plugins
+" Fugitive and GitGutter plugins
 Plug 'tmux-plugins/vim-tmux-focus-events'
+
+" Use nvim in the browser :)
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 " }}}
 
@@ -596,6 +618,7 @@ let g:ycm_autoclose_preview_window_after_completion=1
 "" NOTE: on extensions
 ":CocInstall
 "coc-json
+"coc-yaml
 "coc-css
 "coc-prettier
 "coc-eslint
@@ -606,7 +629,16 @@ let g:ycm_autoclose_preview_window_after_completion=1
 "coc-highlight
 "coc-diagnostic (extra linters for shell, markdown, etc)
 "coc-vetur   (for Vue)
+" Install GQL language server with
+"   npm i -g graphql-language-service-cli
 " TODO: look into coc-snippets
+
+" NOTE: run
+" :CocList extensions (to see list)
+" ? means invalid extension
+" * means extension is activated
+" + means extension is loaded
+" - means extension is disabled
 
 " THIS is how you get error on each line, not just on a character
 " {
@@ -708,6 +740,23 @@ let g:airline_right_sep=''
 let g:airline_right_sep=''
 
 
+" <<< firenvim >>>
+" -------------------------
+
+" Treat browser text entries as markdown formatting
+au BufEnter github.com_*.txt set filetype=markdown
+
+if exists('g:started_by_firenvim') && g:started_by_firenvim
+    " general options
+    set laststatus=0 nonumber noruler noshowcmd
+
+    augroup firenvim
+        autocmd!
+        autocmd BufEnter *.txt setlocal filetype=markdown.pandoc
+    augroup END
+endif
+
+
 " <<< vim-hardtime >>>
 " -------------------------
 
@@ -717,6 +766,26 @@ let g:hardtime_showmsg=1
 let g:hardtime_ignore_quickfix=1
 let g:hardtime_allow_different_key=1
 let g:hardtime_maxcount=3
+
+" <<< vim-fugitive >>>
+" -------------------------
+
+" Solving merge conflicts.
+" See https://medium.com/prodopsio/solving-git-merge-conflicts-with-vim-c8a8617e3633
+" and http://vimcasts.org/episodes/fugitive-vim-resolving-merge-conflicts-with-vimdiff/
+
+" Fugitive Conflict Resolution
+" NOTE: gc stands for git compare (since I already use gd for go to definition)
+" Jumping to the next git hunk (or conflict to fix) can be done with [c to backward or ]c to search forward
+" When you are satisfied with your workspace (usually when all conflicts are resolved) it’s time to leave just
+" this pane open; we can do that with <C-w>o which tells VIM’s window manager to leave the current pane only.
+" Left = target branch (you're current branch)
+" Right = merge branch (what's being merged in)
+" To keep a change wholesale, go to that tab and run :Gwrite!
+nnoremap <leader>gc :Gvdiff<CR>
+" The 'h' is for left and the 'l' is for right
+nnoremap gch :diffget //2<CR>
+nnoremap gcl :diffget //3<CR>
 
 
 " <<< indentpython.vim >>>
@@ -765,10 +834,11 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " See this:
 " https://www.reddit.com/r/vim/comments/d77t6j/guide_how_to_setup_ctags_with_gutentags_properly/
 
-let g:gutentags_add_default_project_roots = 0
-let g:gutentags_project_root = ['package.json', '.git']
-
-let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
+" let g:gutentags_add_default_project_roots = 0
+" let g:gutentags_project_root = ['package.json', '.git']
+"
+" let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
+"
 " USE THIS TO CLEAR THE TAG CACHE
 " command! -nargs=0 GutentagsClearCache call system('rm ' . g:gutentags_cache_dir . '/*')
 
@@ -785,58 +855,58 @@ let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
 " m: Implementation information
 " n: Line number of tag definition
 " S: Signature of routine (e.g. prototype or parameter list)
-let g:gutentags_ctags_extra_args = [
-      \ '--tag-relative=yes',
-      \ '--fields=+ailmnS',
-      \ ]
-
-let g:gutentags_ctags_exclude = [
-      \ '*.git', '*.svg', '*.hg',
-      \ '*/tests/*',
-      \ 'build',
-      \ 'dist',
-      \ '*sites/*/files/*',
-      \ 'bin',
-      \ 'node_modules',
-      \ 'bower_components',
-      \ 'cache',
-      \ 'compiled',
-      \ 'docs',
-      \ 'example',
-      \ 'bundle',
-      \ 'vendor',
-      \ '*.md',
-      \ '*-lock.json',
-      \ '*.lock',
-      \ '*bundle*.js',
-      \ '*build*.js',
-      \ '.*rc*',
-      \ '*.json',
-      \ '*.min.*',
-      \ '*.map',
-      \ '*.bak',
-      \ '*.zip',
-      \ '*.pyc',
-      \ '*.class',
-      \ '*.sln',
-      \ '*.Master',
-      \ '*.csproj',
-      \ '*.tmp',
-      \ '*.csproj.user',
-      \ '*.cache',
-      \ '*.pdb',
-      \ 'tags*',
-      \ 'cscope.*',
-      \ '*.css',
-      \ '*.less',
-      \ '*.scss',
-      \ '*.exe', '*.dll',
-      \ '*.mp3', '*.ogg', '*.flac',
-      \ '*.swp', '*.swo',
-      \ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
-      \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
-      \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
-      \ ]
+" let g:gutentags_ctags_extra_args = [
+"       \ '--tag-relative=yes',
+"       \ '--fields=+ailmnS',
+"       \ ]
+"
+" let g:gutentags_ctags_exclude = [
+"       \ '*.git', '*.svg', '*.hg',
+"       \ '*/tests/*',
+"       \ 'build',
+"       \ 'dist',
+"       \ '*sites/*/files/*',
+"       \ 'bin',
+"       \ 'node_modules',
+"       \ 'bower_components',
+"       \ 'cache',
+"       \ 'compiled',
+"       \ 'docs',
+"       \ 'example',
+"       \ 'bundle',
+"       \ 'vendor',
+"       \ '*.md',
+"       \ '*-lock.json',
+"       \ '*.lock',
+"       \ '*bundle*.js',
+"       \ '*build*.js',
+"       \ '.*rc*',
+"       \ '*.json',
+"       \ '*.min.*',
+"       \ '*.map',
+"       \ '*.bak',
+"       \ '*.zip',
+"       \ '*.pyc',
+"       \ '*.class',
+"       \ '*.sln',
+"       \ '*.Master',
+"       \ '*.csproj',
+"       \ '*.tmp',
+"       \ '*.csproj.user',
+"       \ '*.cache',
+"       \ '*.pdb',
+"       \ 'tags*',
+"       \ 'cscope.*',
+"       \ '*.css',
+"       \ '*.less',
+"       \ '*.scss',
+"       \ '*.exe', '*.dll',
+"       \ '*.mp3', '*.ogg', '*.flac',
+"       \ '*.swp', '*.swo',
+"       \ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
+"       \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+"       \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
+"       \ ]
 
 
 
