@@ -681,6 +681,9 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" sd = show diagnostic (part of coc)
+nmap sd <Plug>(coc-diagnostic-info)
+
 " let g:node_client_debug = 1
 
 " Use K for show documentation in preview window
@@ -1149,11 +1152,21 @@ colorscheme gruvbox
 " spell checking that accounts for camel/snake case.
 " Enable spellcheck. Use z= to see spelling suggestions
 " set spell spelllang=en_us
-"
-" Try to disable because it's slow
+
+
+" Try to disable because it's slow -- TOGGLE THESE TOGETHER
 let g:enable_spelunker_vim = 0
+" spelunker does spellcheck, so don't want to mark it twice.
+" set nospell
+" set spell
+" set spell spelllang=en_us
+
+" Note: spelunker doesn't currently run on new files or git messages.
+" This turns on spelling just for commit messages until I can figure this out.
+autocmd FileType gitcommit let g:enable_spelunker_vim = 1
 
 if !g:enable_spelunker_vim
+  " echom 'Not set'
   " " Show misspelled words in bold
   " " NOTE: this must must after colorscheme for bold to work correctly.
   hi clear SpellBad
@@ -1163,24 +1176,19 @@ if !g:enable_spelunker_vim
   hi SpellCap cterm=bold
   hi clear SpellLocal
   hi SpellLocal cterm=bold
-else
-  " spelunker does spellcheck, so don't want to mark it twice.
-  set nospell
-
-  " 2: Spellcheck displayed words in buffer. Fast and dynamic. The waiting time
-  " depends on the setting of CursorHold `set updatetime=1000`.
-  let g:spelunker_check_type = 2
-
-  highlight SpelunkerSpellBad cterm=bold
-  highlight SpelunkerComplexOrCompoundWord cterm=bold
 endif
+
+" 2: Spellcheck displayed words in buffer. Fast and dynamic. The waiting time
+" depends on the setting of CursorHold `set updatetime=1000`.
+let g:spelunker_check_type = 2
+
+highlight SpelunkerSpellBad cterm=bold
+highlight SpelunkerComplexOrCompoundWord cterm=bold
 
 set spellfile=~/dotfiles/klm.en.utf-8.add
 
-" Note: spelunker doesn't currently run on new files or git messages.
-" This turns on spelling just for commit messages until I can figure this out.
-autocmd FileType gitcommit setlocal spell
-
 " }}}
 "
-" vim:foldmethod=marker:foldlevel=0
+" I changed this from 0 to 1000 because doing a ciw (change in word) would
+" really mess things up for some reason.
+" vim:foldmethod=marker:foldlevel=1000
