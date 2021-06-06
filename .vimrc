@@ -761,9 +761,6 @@ let g:airline_right_sep=''
 " <<< firenvim >>>
 " -------------------------
 
-" Treat browser text entries as markdown formatting
-au BufEnter github.com_*.txt set filetype=markdown
-
 if exists('g:started_by_firenvim') && g:started_by_firenvim
   " Default local and global settings. Overwritten below for some sites.
   let g:firenvim_config = {
@@ -789,10 +786,17 @@ if exists('g:started_by_firenvim') && g:started_by_firenvim
   " general options
   set laststatus=0 nonumber noruler noshowcmd
 
-  autocmd BufWritePost * %s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g
   augroup firenvim
     autocmd!
+
     autocmd BufEnter *.txt setlocal filetype=markdown.pandoc
+    " Treat browser text entries as markdown formatting
+    "au BufEnter github.com_*.txt set filetype=markdown
+
+    " This is run before writing the whole buffer to a file.
+    " (BufWritePost doesn't work, and BufWriteCmd makes it so the plugin doesnt exit because
+    " it gets and error that the match doesnt exist (even with /ge)
+    autocmd BufWrite * %s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
   augroup END
 endif
 
@@ -1146,26 +1150,32 @@ colorscheme gruvbox
 " Enable spellcheck. Use z= to see spelling suggestions
 " set spell spelllang=en_us
 "
-" " Show misspelled words in bold
-" " NOTE: this must must after colorscheme for bold to work correctly.
-" hi clear SpellBad
-" hi SpellBad cterm=bold
-" hi clear SpellRare
-" hi clear SpellCap
-" hi SpellCap cterm=bold
-" hi clear SpellLocal
-" hi SpellLocal cterm=bold
+" Try to disable because it's slow
+let g:enable_spelunker_vim = 0
 
-" spelunker does spellcheck, so don't want to mark it twice.
-set nospell
+if !g:enable_spelunker_vim
+  " " Show misspelled words in bold
+  " " NOTE: this must must after colorscheme for bold to work correctly.
+  hi clear SpellBad
+  hi SpellBad cterm=bold
+  hi clear SpellRare
+  hi clear SpellCap
+  hi SpellCap cterm=bold
+  hi clear SpellLocal
+  hi SpellLocal cterm=bold
+else
+  " spelunker does spellcheck, so don't want to mark it twice.
+  set nospell
+
+  " 2: Spellcheck displayed words in buffer. Fast and dynamic. The waiting time
+  " depends on the setting of CursorHold `set updatetime=1000`.
+  let g:spelunker_check_type = 2
+
+  highlight SpelunkerSpellBad cterm=bold
+  highlight SpelunkerComplexOrCompoundWord cterm=bold
+endif
+
 set spellfile=~/dotfiles/klm.en.utf-8.add
-
-" 2: Spellcheck displayed words in buffer. Fast and dynamic. The waiting time
-" depends on the setting of CursorHold `set updatetime=1000`.
-let g:spelunker_check_type = 2
-
-highlight SpelunkerSpellBad cterm=bold
-highlight SpelunkerComplexOrCompoundWord cterm=bold
 
 " Note: spelunker doesn't currently run on new files or git messages.
 " This turns on spelling just for commit messages until I can figure this out.
