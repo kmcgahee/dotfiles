@@ -372,6 +372,9 @@ Plug 'morhetz/gruvbox'
 " Dim background color when window isn't in focus.
 Plug 'blueyed/vim-diminactive'
 
+" Emojis :)
+Plug 'junegunn/vim-emoji'
+
 
 " }}}
 
@@ -426,6 +429,16 @@ Plug 'kamykn/popup-menu.nvim'
 " }}}
 
 " <USER INTERFACE> {{{
+
+
+" Get a popup with a command for vim commands
+" TODO: would love to re-enable this once the error goes away (maybe in future nvim versions)
+" Plug 'sudormrfbin/cheatsheet.nvim'
+" TODO enabled telescope once I have nvim 0.5+ installed
+" Installing Telescope is not required, but highly recommended for using this plugin effectively. popup.nvim and plenary.nvim are used by Telescope.
+" Plug 'nvim-lua/popup.nvim'
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
 
 " Show only the current window having a 'current' line and allow custom coloring if it.
 Plug 'miyakogi/conoline.vim'
@@ -719,6 +732,11 @@ command! -nargs=0 Prettier :CocCommand prettier.formatFile
 " let g:diminactive_enable_focus=1
 
 
+" <<< vim-emoji >>>
+" -------------------------
+set completefunc=emoji#complete
+
+
 " <<< listtoggle >>>
 " -------------------------
 
@@ -747,13 +765,35 @@ let g:airline_right_sep=''
 au BufEnter github.com_*.txt set filetype=markdown
 
 if exists('g:started_by_firenvim') && g:started_by_firenvim
-    " general options
-    set laststatus=0 nonumber noruler noshowcmd
+  " Default local and global settings. Overwritten below for some sites.
+  let g:firenvim_config = {
+        \ 'globalSettings': {
+            \ 'alt': 'all',
+            \ 'cmdlineTimeout': 3000,
+        \  },
+        \ 'localSettings': {
+            \ '.*': {
+                \ 'cmdline': 'neovim',
+                \ 'content': 'text',
+                \ 'priority': 0,
+                \ 'selector': 'textarea',
+                \ 'takeover': 'always',
+            \ },
+        \ }
+    \ }
+  let fc = g:firenvim_config['localSettings']
+  let fc['https?://.*roamresearch.com'] = { 'takeover': 'never', 'priority': 1 }
+  " let fc['https?://.*github.com'] = { 'takeover': 'never', 'priority': 1 }
+  let fc['https?://mail.google.com'] = { 'takeover': 'never', 'priority': 1 }
 
-    augroup firenvim
-        autocmd!
-        autocmd BufEnter *.txt setlocal filetype=markdown.pandoc
-    augroup END
+  " general options
+  set laststatus=0 nonumber noruler noshowcmd
+
+  autocmd BufWritePost * %s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g
+  augroup firenvim
+    autocmd!
+    autocmd BufEnter *.txt setlocal filetype=markdown.pandoc
+  augroup END
 endif
 
 
@@ -786,6 +826,9 @@ nnoremap <leader>gc :Gvdiff<CR>
 " The 'h' is for left and the 'l' is for right
 nnoremap gch :diffget //2<CR>
 nnoremap gcl :diffget //3<CR>
+
+command! Greview :Git! diff --staged
+nnoremap <leader>gr :Greview<cr>
 
 
 " <<< indentpython.vim >>>
