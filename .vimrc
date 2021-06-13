@@ -2,6 +2,11 @@
 
 " NOTES {{{
 "
+" Search for INIT in this file to see steps that must be manually performed
+" when first using this.
+"
+" PRUNE are notes to myself for things to consider removing in the future.
+"
 " This .vimrc is inspired by various others:
 " - https://github.com/dougblack/dotfiles/blob/master/.vimrc
 " - https://github.com/amix/vimrc/tree/master/vimrcs
@@ -11,7 +16,15 @@
 " Things to do:
 "  - Ensure mappings are using correct mapping type (i.e. what mode)
 "  - Make sure all leader key mappings are grouped under 'leader powerups'
+"  - Map out leader keys mapped automatically by plugins (see TODO for this)
 "  - Try to categorize groups
+"
+"  General reminders for myself:
+"  on mapping
+"   noremap = non-recursive map (i.e. doesn't expand)
+"   :map does nvo == normal + (visual + select) + operator pending
+"   :map! does ic == insert + command-line mode (as stated on help map-modes tables.)
+"   So To map to all modes you need both :map and :map!.
 " }}}
 
 " GENERAL {{{
@@ -42,7 +55,10 @@ imap jK <Esc>
 imap JK <Esc>
 
 " Save file after forgetting to start vim using sudo
-cmap w!! w !sudo tee > /dev/null %
+" NOTE: this 'tee' hack doesn't work in nvim, use the SudaPlugin instead.
+" cmap w!! w !sudo tee > /dev/null %
+cmap w!! :SudaWrite<CR>
+
 
 " }}}
 
@@ -51,13 +67,20 @@ cmap w!! w !sudo tee > /dev/null %
 " Enable syntax processing
 syntax enable
 
+" Enable specific settings based on file types.
+" This needs to be defined early on as it can affect future settings.
+filetype plugin on
+filetype indent on
+
 " Auto-highlight matching parentheses and show it blinking
 set showmatch
 set mat=2
 
-" Look back 200 lines to figure out syntax highlighting.
+" Look back further in the buffer to figure out syntax highlighting.
 " This helps a ton in React w/ styled-components.
-autocmd BufEnter * :syntax sync minlines=5000
+" NOTE: this overridden by the commands below, but left this here for other
+" file types.
+autocmd BufEnter * :syntax sync minlines=1000
 
 " Highlighting for large files
 " Copied from: https://thoughtbot.com/blog/modern-typescript-and-react-development-in-vim
@@ -66,7 +89,7 @@ autocmd BufEnter * :syntax sync minlines=5000
 " This does so at a performance cost, especially for large files. It is significantly faster in Neovim than in vim.
 " I prefer to enable this when I enter a JavaScript or TypeScript buffer, and disable it when I leave:
 autocmd BufEnter *.{js,jsx,ts,tsx,vue} :syntax sync fromstart
-autocmd BufLeave *.{js,jsx,ts,tsx,vue} :syntax sync minlines=200
+autocmd BufLeave *.{js,jsx,ts,tsx,vue} :syntax sync minlines=1000
 
 
 " Add some extra keywords to Todo highlight group
@@ -81,11 +104,6 @@ highlight! def link highlightKeywords Todo
 " }}}
 
 " INDENTATION {{{
-
-" Enable specific settings based on file types.
-" This needs to be defined early on as it can affect future settings.
-filetype plugin on
-filetype indent on
 
 " Default settings for all file types (overridden below)
 set tabstop=4          " number of visual spaces per TAB
@@ -117,7 +135,7 @@ set history=500
 set undolevels=500
 
 " Save a persistent 'undo' file.
-" NOTE: this directory needs to be created manually.
+" INIT: this directory needs to be created manually.
 set undodir=~/.vim/undodir
 set undofile
 
@@ -125,7 +143,7 @@ set undofile
 
 " EDITING CHANGES {{{
 
-" Yank to the end of the line instead of the whole line
+" PRACTICE: Yank to the end of the line instead of the whole line
 nnoremap Y y$
 
 " Auto drop into insert mode when deleting text
@@ -141,18 +159,19 @@ nnoremap ' `
 nnoremap ` '
 
 " Move vertically by visual line instead of real line (if wrapping is enabled)
-nnoremap j gj
-nnoremap k gk
+" KLM: disabled because I never use
+" nnoremap j gj
+" nnoremap k gk
 
 " }}}
 
 " LEADER POWERUPS {{{
 
-" Easy way to un-highlight all search results
+" Unhighlight all search results
 nnoremap <leader><space> :nohlsearch<CR>
 
 " Toggle between absolute and relative line numbers
-" NOTE: l is now used for location list
+" NOTE: l is now used for location list, and I never use this.
 " nnoremap <leader>l :call <SID>ToggleNumber()<CR>
 
 " Split horizontal/vertically and start with file search open.
@@ -160,6 +179,7 @@ nnoremap <leader>hs :new<CR>:GFiles<CR>
 nnoremap <leader>vs :vs<CR>:GFiles<CR>
 
 " Toggle viewing the Undo tree
+" PRUNE: rarely use this plugin, but it can be nice.
 nnoremap <leader>u :UndotreeToggle<CR>
 
 " Switch files using fuzzy search
@@ -168,11 +188,9 @@ nnoremap <leader>s :GFiles<CR>
 " Only show changes to file, zr will show 3 lines above/below hunks.
 nnoremap <leader>hf :GitGutterFold<CR>zr
 
+" ha = add to stage
 " Already use <leader>hs for horizontal split fuzzy open
 nmap <Leader>ha <Plug>GitGutterStageHunk
-
-" Save the current session and resume it with vim -S
-" nnoremap <leader>m :mksession<CR>
 
 " Mark the current word as "Good" in the spellfile
 " Requires spelunker.vim
@@ -192,11 +210,14 @@ nnoremap <leader>m :NERDTreeToggle<CR>
 
 " Use ,d (or ,dd or 20,dd) to delete a line without adding it to the yanked buffer
 " This also works in in visual mode
-nnoremap <silent> <leader>d "_d
-vnoremap <silent> <leader>d "_d
+" KLM: commented out because I can use "0 to get the previous buffer (that
+" wasn't overwritten with a normal d)
+" nnoremap <silent> <leader>d "_d
+" vnoremap <silent> <leader>d "_d
 
 " Pull word under cursor into LHS of a substitute (for search and replace)
 " This uses '#' as a delimiter instead of /
+" PRACTICE
 nnoremap <leader>z :%s#\<<C-r>=expand("<cword>")<CR>\>#
 
 " Comment lines of code
@@ -208,8 +229,7 @@ vmap <leader>c :TComment<CR>
 " nmap <leader>e :TCommentAs javascript<CR>
 " vmap <leader>e :TCommentAs javascript<CR>
 
-
-" Leader keys mapped from plugins
+" Leader keys mapped from plugins (so I don't overwrite them)
 " TODO:
 
 " }}}
@@ -221,6 +241,7 @@ vmap > >gv
 vmap < <gv
 
 " Highlight the last inserted text
+" PRACTICE
 nnoremap gV `[v`]
 
 " }}}
@@ -250,7 +271,7 @@ set wildignore=*.o,*~,*.pyc,*.swp,*.class,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 " Speed up the updatetime so gitgutter and similar plugins update more often
 set updatetime=300
 
-" Hack to always display sign column
+" Hack to always display sign column (might not be necessary on nvim)
 augroup always_display_sign_col
   autocmd!
   autocmd BufEnter * sign define dummy
@@ -265,12 +286,9 @@ augroup END
 " Show the current position in the file
 " set ruler
 
-" Enable mouse in all modes ('a')
-" set mouse=a
-
 " Sometimes files opened using quickfix window don't detect filetype
 " so tie it into the "refresh screen" command.
-" KLM: doesn't seem to work
+" KLM: doesn't seem to work, but using :e does.
 "nnoremap <C-w> :filetype detect<cr>:redraw!<cr>
 
 " }}}
@@ -284,6 +302,7 @@ set hlsearch
 set incsearch
 
 " Use the current visual selection to search using * and #
+" PRACTICE
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
@@ -292,34 +311,39 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " BUFFERS & SPLITS {{{
 
 " Hide buffers instead of closing them, this also preserves marks and undo buffers
+" (this also has to be set for CoC to work, set it's set again below)
 set hidden
 
 " Set default locations for new splits to appear
 set splitbelow
 set splitright
 
-" Avoid Ctrl-W when navigating or creating new splits.
+" Avoid having to press Ctrl-W when navigating or creating new splits.
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
 " Show all buffers and then type in number or part of file and hit enter
-nnoremap <F5> :ls<CR>:b<Space>
+" KLM: never use anymore, should set up fuzzy search for open buffers instead.
+" nnoremap <F5> :ls<CR>:b<Space>
 
 
 " Open project notes. Use gt to toggle between (goto tab).
 " with Vim’s :drop command. With :drop, Vim will open the file if it’s
 " not already open, or jump to the open buffer if it is.
 " Combine with :tab and we get an even better mapping:
-nmap <script>n<CR> <SID>:tab drop tmp/notes.md<CR>
+"
+" TODO: this doesn't work.
+" nmap <script>n<CR> <SID>:tab drop tmp/notes.md<CR>
 
 " }}}
 
 " TAGS {{{
 
 " Use 'tagbar' plugin to show entire file structure
-nnoremap <F8> :TagbarToggle<CR>
+" I commented out this plugin -- I never use it.
+" nnoremap <F8> :TagbarToggle<CR>
 
 " }}}
 
@@ -344,9 +368,11 @@ set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo
 " set foldcolumn=2
 
 " Re-map spacebar to toggling the current fold because it's so common
-vnoremap <Space> za
+" FIX and PRACTICE
+" nnoremap <Space> za
 
 " Mappings to easily toggle fold levels
+" PRACTICE
 nnoremap z0 :set foldlevel=0<cr>
 nnoremap z1 :set foldlevel=1<cr>
 nnoremap z2 :set foldlevel=2<cr>
@@ -400,13 +426,14 @@ Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 Plug 'leafoftree/vim-vue-plugin'
 
 " For highlighting GraphQL (GQL)
+" FIX: doesn't seem to work?
 Plug 'jparise/vim-graphql'
 
 " }}}
 
 " <SYNTAX HIGHLIGHTING & FORMATTING> {{{
 
-" Supports styled-components AND emotions and others
+" Supports styled-components AND emotion and others
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 
 " Better syntax highlighting and formatting, also highlights JSDocs
@@ -478,10 +505,12 @@ Plug 'bkad/camelcasemotion'
 Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
 
 " Show side-bar when hit ", @, or ^R to see what's in registers.
-" KLM: commented out to see if it fixes the 'collapse pane on paste' bug I'm
+" KLM: commented out to see if it fixes the 'collapse pane on paste' bug I'm seeing
 " Plug 'junegunn/vim-peekaboo'
 
 " Use <leader>l and <leader>q to toggle location and quickfix lists
+" FIX (leader l doesn't seem to work, but leader q does)
+" PRACTICE
 Plug 'valloric/listtoggle'
 
 " Make quickfix and locationlist easier to manage (close if last open or if
@@ -509,23 +538,19 @@ Plug 'tmhedberg/simpylfold', { 'for': 'python' }
 
 " <GENERAL> {{{
 
-" Async linter and fixer
-" NOTE: this required a newer version of Vim because of an Ubuntu bug that
-" would cause the cursor to not display very quickly.
-" PPA: https://launchpad.net/~jonathonf/+archive/ubuntu/vim
-" Plug 'w0rp/ale'
-
 " File system explorer
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeFind', 'NERDTreeToggle'] }
 
 " Three things in one:
-"  1) correction commonly misspelled words
+"  1) correct commonly misspelled words
 "  2) allow capital S for smart case replacements
 "  3) provide shortcuts for reformatting casing (crm=coerce to snake_case,
 "  cr-=dash-case, cru=upper-case, crt=title case)
+" PRACTICE
 Plug 'tpope/vim-abolish'
 
 " 20 convenient mappings starting with ] and [
+" PRACTICE
 Plug 'tpope/vim-unimpaired'
 
 " Require timeout between hjkl presses to practice using better movement commands
@@ -538,24 +563,27 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 " Use nvim in the browser :)
 Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
+" Enable w!! hack with nvim (this prompts you for password and write)
+Plug 'lambdalisue/suda.vim'
+
 " }}}
 
 " <SEARCHING> {{{
 
 " Use 2-character sequence to jump to anywhere in the file
+" PRACTICE (high-priority)
 Plug 'easymotion/vim-easymotion'
 " | Plug 'haya14busa/vim-easyoperator-line'
 " | Plug 'aykamko/vim-easymotion-segments'
 
 
 " Fuzzy search git repo and populate results in change list
+" NOTE: Another good fuzzy finder seems to be CTRLP
+" https://vimawesome.com/plugin/ctrlp-vim-everything-has-changed
 Plug 'mileszs/ack.vim'
 
-" Another good fuzzy finder seems to be CTRLP
-" https://vimawesome.com/plugin/ctrlp-vim-everything-has-changed
-
 " Fuzzy file finder (e.g. :Files, :Commits), works with more than just vim
-" Note: need to install using git clone and install.sh
+" INIT: need to install using git clone and install.sh
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 
@@ -565,9 +593,10 @@ Plug 'junegunn/fzf.vim'
 
 
 " Seems like the best tags manager? This is mostly used for 'go to definition'
+" Disabled right now because don't use and it's a bit slow.
 " Plug 'ludovicchabant/vim-gutentags'
-
-" More robust version of ctags, use C^-] and C^-t to nav
+"
+" Could also explore: More robust version of ctags, use C^-] and C^-t to nav
 " Plug 'universal-ctags/ctags'
 
 " Auto-generate tags file in local repo while respecting ignore files
@@ -580,17 +609,21 @@ Plug 'junegunn/fzf.vim'
 " }}}
 
 " <GIT> {{{
+
 " Git wrapper (:Gblame, etc)
+" PRACTICE
 Plug 'tpope/vim-fugitive'
 
 " Show diffs in gutter and allow you to stage or fold hunks
 Plug 'airblade/vim-gitgutter'
+"
 " }}}
 
 " <EASY INSERT / EDITING> {{{
 
 " Easily insert 'templates' (snippets)
 " The 1st is the engine, the 2nd plugin is the actual snippets collection.
+" PRACTICE (and look for coc specific plugins instead of these)
 " Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
 
@@ -598,13 +631,14 @@ Plug 'airblade/vim-gitgutter'
 "Plug 'townk/vim-autoclose'
 
 " Easily surround existing text with quotes / HTML blocks
+" PRACTICE
 " Plug 'tpope/vim-surround'
 
-" Auto-complete (NVIM)
+" Supports VS-Code plugins for nvim
 " Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Auto-complete
+" Auto-complete (CoC does this much better)
 " Also need to install https://valloric.github.io/YouCompleteMe/#ubuntu-linux-x64
 " Plug 'valloric/youcompleteme'
 
@@ -619,16 +653,16 @@ call plug#end()
 " <<< youcompleteme >>>
 " -------------------------
 
-let g:ycm_collect_identifiers_from_tags_files=1
-" Enable language specific identifiers
-let g:ycm_seed_identifiers_with_syntax=1
-let g:ycm_min_num_of_chars_for_completion=3
-let g:ycm_autoclose_preview_window_after_completion=1
+" let g:ycm_collect_identifiers_from_tags_files=1
+" " Enable language specific identifiers
+" let g:ycm_seed_identifiers_with_syntax=1
+" let g:ycm_min_num_of_chars_for_completion=3
+" let g:ycm_autoclose_preview_window_after_completion=1
 
 " <<< coc.nvim >>>
 " -------------------------
 
-"" NOTE: on extensions
+"" INIT: install these coc extensions manually using
 ":CocInstall
 "coc-json
 "coc-yaml
@@ -687,6 +721,7 @@ nmap sd <Plug>(coc-diagnostic-info)
 " let g:node_client_debug = 1
 
 " Use K for show documentation in preview window
+" PRACTICE
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
