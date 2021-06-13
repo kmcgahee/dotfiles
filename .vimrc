@@ -207,6 +207,8 @@ nnoremap <leader>a :Ack!<space>
 " Quickly open file explorer. If use 'Find' then will open at current file.
 nnoremap <leader>n :NERDTreeFind<CR>
 nnoremap <leader>m :NERDTreeToggle<CR>
+" PRACTICE (if need to quick jump there)
+map <leader>nf :NERDTreeFocus<cr>
 
 " Use ,d (or ,dd or 20,dd) to delete a line without adding it to the yanked buffer
 " This also works in in visual mode
@@ -714,6 +716,12 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+" Remap for format selected region
+" PRUNE
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
 
 " sd = show diagnostic (part of coc)
 nmap sd <Plug>(coc-diagnostic-info)
@@ -734,13 +742,6 @@ endfunction
 
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-vmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
 
 " augroup mygroup
 "   autocmd!
@@ -866,9 +867,11 @@ let g:hardtime_maxcount=3
 " To keep a change wholesale, go to that tab and run :Gwrite!
 nnoremap <leader>gc :Gvdiff<CR>
 " The 'h' is for left and the 'l' is for right
+" PRACTICE
 nnoremap gch :diffget //2<CR>
 nnoremap gcl :diffget //3<CR>
 
+" PRACTICE
 command! Greview :Git! diff --staged
 nnoremap <leader>gr :Greview<cr>
 
@@ -909,8 +912,8 @@ let g:jsx_ext_required=0
 " Set trigger for pulling up snippet selection.
 " KLM: disabled TAB to use in coc autocomplete
 " let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" let g:UltiSnipsJumpForwardTrigger="<c-b>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 "
 " <<< gutentags >>>
@@ -1011,39 +1014,11 @@ let g:EasyMotion_do_mapping=0
 
 " Need one more keystroke, but on average, it may be more comfortable.
 "map <Space> <Plug>(easymotion-overwin-f2)
+" PRACTICE
 map <leader><leader> <Plug>(easymotion-bd-f2)
 
 " Turn on case insensitive feature
 let g:EasyMotion_smartcase=1
-
-
-" <<< ale >>>
-" -------------------------
-
-
-" Set this. Airline will handle the rest for ALE
-" let g:airline#extensions#ale#enabled=1
-"
-" "nmap <silent> <leader>k <Plug>(ale_previous_wrap)
-" "nmap <silent> <leader>j <Plug>(ale_next_wrap)
-"
-" highlight! ALEWarning ctermbg=DarkMagenta
-" highlight! ALEError ctermbg=DarkMagenta
-"
-" let b:ale_fixers={ 'typescript': ['prettier'], 'javascript': ['prettier'], 'python': ['black'] }
-" let b:ale_linters={ 'typescript': ['tsserver'], 'javascript': ['eslint'], 'python': ['pylint'] }
-"
-" " let g:ale_completion_enabled=0
-" " let g:ale_lint_delay=200   " millisecs
-" let g:ale_lint_on_text_changed = 'never'
-" " let g:ale_lint_on_text_changed='always'  " never/insert/normal/always
-" " let g:ale_lint_on_enter=1
-" " let g:ale_lint_on_filetype_changed=1
-" let g:ale_lint_on_save=1
-" let g:ale_fix_on_save=1
-" " let g:ale_fix_on_save=1
-" " KLM: don't enable quickfix because use that for Ack
-" " let g:ale_set_quickfix=1
 
 
 " <<< nerdtree >>>
@@ -1052,10 +1027,6 @@ let g:EasyMotion_smartcase=1
 let g:NERDTreeWinPos="right"
 let NERDTreeShowHidden=0
 let g:NERDTreeWinSize=35
-map <leader>nn :NERDTreeToggle<cr>
-map <leader>nb :NERDTreeFromBookmark<Space>
-map <leader>ns :NERDTreeFind<cr>
-map <leader>nf :NERDTreeFocus<cr>
 
 " Don't display these kinds of files
 let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
