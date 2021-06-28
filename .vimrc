@@ -492,9 +492,6 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 " Transform the UI to be better for writing using :Goyo
 Plug 'junegunn/goyo.vim', { 'on': 'Goyo' }
 
-" Map ctrl+<hjkl> to move between panes without conflicting with tmux.
-Plug 'christoomey/vim-tmux-navigator'
-
 " Remap '.' to allow plugins to tap into it (Unimpaired uses this)
 Plug 'tpope/vim-repeat'
 
@@ -506,6 +503,9 @@ Plug 'bkad/camelcasemotion'
 
 " Support for {{ and [[ for syntax highlighting, matching, text object commands, etc
 Plug 'mustache/vim-mustache-handlebars', { 'for': ['jinja', 'html'] }
+
+" Map ctrl+<hjkl> to move between panes without conflicting with tmux.
+Plug 'christoomey/vim-tmux-navigator'
 
 " Show side-bar when hit ", @, or ^R to see what's in registers.
 " KLM: commented out to see if it fixes the 'collapse pane on paste' bug I'm seeing
@@ -522,15 +522,24 @@ Plug 'valloric/listtoggle'
 Plug 'romainl/vim-qf'
 
 
+" Open items in quickfix/location based on last focused when hitting enter,
+" and add <leader>hs and <leader>vs for opening it in a new split.
+" You can select multiple with visual to open them at the same time.
+Plug 'yssl/QFEnter'
+
 " Better version than matchit built in plugin (this should auto disable that one)
 " match-up is a plugin that lets you highlight, navigate, and operate on sets of matching text.
 " It extends vim's % key to language-specific words instead of just single characters.
 " (note: for Vue this needs vim-vue-plugin)
 " Plug 'andymass/vim-matchup'
+"
 " KLM: I replaced ^^^ matchup with matchtag, but then I don't get the % to
 " jump to another tag. If syntax highlighting still seems broken, then switch
 " back to that and figure out why it highlights some closing braces as red.
+" enable matchit plugin which ships with vim and greatly enhances '%'
+packadd! matchit
 Plug 'leafOfTree/vim-matchtag'
+
 
 
 
@@ -593,6 +602,7 @@ Plug 'mileszs/ack.vim'
 " INIT: need to install using git clone and install.sh
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
+
 
 " }}}
 
@@ -793,6 +803,15 @@ let g:lt_location_list_toggle_map='<leader>l'
 let g:lt_quickfix_list_toggle_map='<leader>q'
 " Set height of list
 let g:lt_height=10
+
+" <<< QFEnter >>>
+" -------------------------
+
+let g:qfenter_keymap = {}
+let g:qfenter_keymap.open = ['<CR>', '<2-LeftMouse>']
+let g:qfenter_keymap.vopen = ['<Leader>vs']
+let g:qfenter_keymap.hopen = ['<Leader>hs']
+" let g:qfenter_keymap.topen = ['<Leader><Tab>']
 
 
 " <<< vim-airline >>>
