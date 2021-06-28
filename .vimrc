@@ -1161,6 +1161,9 @@ endfunc
 " Enable 8 bit color support
 set t_Co=256
 
+" Enable 256 colors in nvim
+set termguicolors
+
 " Requires gruvbox plugin
 " NOTE: this must be set AFTER the plugin section to work.
 let g:gruvbox_italic=1
