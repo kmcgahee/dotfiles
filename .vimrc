@@ -424,12 +424,13 @@ Plug 'vim-scripts/sh.vim--Cla', { 'for': ['sh', 'zsh', 'bash'] }
 " Vim syntax and indent plugin for .vue files. Mainly inspired by mxw/vim-jsx
 " KLM: trying to enable for all to see if that fixes the search box
 " highlighting being bad :(
+" TODO: this seems like an alternative to coc-vetur (having both might be
+" causing issues)
 " Plug 'leafoftree/vim-vue-plugin', { 'for': ['vue'] }
-Plug 'leafoftree/vim-vue-plugin'
 
 " For highlighting GraphQL (GQL)
 " FIX: doesn't seem to work?
-Plug 'jparise/vim-graphql'
+" Plug 'jparise/vim-graphql'
 
 " }}}
 
@@ -525,7 +526,11 @@ Plug 'romainl/vim-qf'
 " match-up is a plugin that lets you highlight, navigate, and operate on sets of matching text.
 " It extends vim's % key to language-specific words instead of just single characters.
 " (note: for Vue this needs vim-vue-plugin)
-Plug 'andymass/vim-matchup'
+" Plug 'andymass/vim-matchup'
+" KLM: I replaced ^^^ matchup with matchtag, but then I don't get the % to
+" jump to another tag. If syntax highlighting still seems broken, then switch
+" back to that and figure out why it highlights some closing braces as red.
+Plug 'leafOfTree/vim-matchtag'
 
 
 
@@ -672,7 +677,7 @@ call plug#end()
 "coc-prettier
 "coc-eslint
 "coc-stylelint
-"coc-tsserver coc-tslint-plugin
+"NO --- This is depreciated in favor of eslint coc-tsserver coc-tslint-plugin
 "coc-html
 "coc-pyright   (a replacement for the depreciated coc-python)
 "coc-highlight
@@ -694,6 +699,11 @@ call plug#end()
 "   diagnostic.checkCurrentLine": true
 " }
 " coc-settings.json can be found in ~/.vim/coc-settings.json
+
+""" NOTE! vue is a special snowflake for formatOnSaveFiletypes not working
+" so need this hack:
+" see https://github.com/neoclide/coc-prettier/issues/73 
+autocmd BufWritePre *.vue Prettier
 
 " If hidden is not set, TextEdit might fail.
 set hidden
@@ -802,6 +812,7 @@ let g:airline_right_sep=''
 
 if exists('g:started_by_firenvim') && g:started_by_firenvim
   " Default local and global settings. Overwritten below for some sites.
+  " Changed: 'takeover: always': to 'once'
   let g:firenvim_config = {
         \ 'globalSettings': {
             \ 'alt': 'all',
@@ -813,7 +824,7 @@ if exists('g:started_by_firenvim') && g:started_by_firenvim
                 \ 'content': 'text',
                 \ 'priority': 0,
                 \ 'selector': 'textarea',
-                \ 'takeover': 'always',
+                \ 'takeover': 'never',
             \ },
         \ }
     \ }
@@ -821,6 +832,11 @@ if exists('g:started_by_firenvim') && g:started_by_firenvim
   let fc['https?://.*roamresearch.com'] = { 'takeover': 'never', 'priority': 1 }
   " let fc['https?://.*github.com'] = { 'takeover': 'never', 'priority': 1 }
   let fc['https?://mail.google.com'] = { 'takeover': 'never', 'priority': 1 }
+
+  " Keep in sync with underlying element.
+  " Sometimes this does weird things
+  " au TextChanged * ++nested write
+  " au TextChangedI * ++nested write
 
   " general options
   set laststatus=0 nonumber noruler noshowcmd
@@ -1198,3 +1214,4 @@ set spellfile=~/dotfiles/klm.en.utf-8.add
 " I changed this from 0 to 1000 because doing a ciw (change in word) would
 " really mess things up for some reason.
 " vim:foldmethod=marker:foldlevel=1000
+"
